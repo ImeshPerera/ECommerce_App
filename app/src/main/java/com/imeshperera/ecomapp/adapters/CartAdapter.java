@@ -51,6 +51,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
 
         Glide.with(context).load(model.getImgUrl()).into(holder.img);
 
+        int pos = position;
         holder.deleteBtn.setOnClickListener(v -> {
             if (auth.getCurrentUser() != null && model.getDocumentId() != null) {
                 firestore.collection("AddToCart")
@@ -60,8 +61,9 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
                         .delete()
                         .addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
-                                list.remove(position);
-                                notifyDataSetChanged();
+                                list.remove(pos);
+                                notifyItemRemoved(pos);
+                                notifyItemRangeChanged(pos, list.size());
                                 if (context instanceof CartActivity) {
                                     ((CartActivity) context).calculateTotalAmount(list);
                                 }

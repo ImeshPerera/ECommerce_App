@@ -83,6 +83,8 @@ public class CheckoutActivity extends AppCompatActivity {
         subtotalTv = findViewById(R.id.checkout_subtotal);
         placeOrderBtn = findViewById(R.id.place_order_btn);
 
+        loadSavedAddress();
+
         cartModelList = (List<MyCartModel>) getIntent().getSerializableExtra("itemList");
         if (cartModelList == null) {
             cartModelList = new ArrayList<>();
@@ -96,6 +98,25 @@ public class CheckoutActivity extends AppCompatActivity {
                 placeOrder();
             }
         });
+    }
+
+    private void loadSavedAddress() {
+        android.content.SharedPreferences sp = getSharedPreferences("CheckoutAddress", MODE_PRIVATE);
+        nameEt.setText(sp.getString("name", ""));
+        phoneEt.setText(sp.getString("phone", ""));
+        addressEt.setText(sp.getString("address", ""));
+        cityEt.setText(sp.getString("city", ""));
+        postalEt.setText(sp.getString("postal", ""));
+    }
+
+    private void saveAddressLocal(String name, String phone, String address, String city, String postal) {
+        android.content.SharedPreferences.Editor editor = getSharedPreferences("CheckoutAddress", MODE_PRIVATE).edit();
+        editor.putString("name", name);
+        editor.putString("phone", phone);
+        editor.putString("address", address);
+        editor.putString("city", city);
+        editor.putString("postal", postal);
+        editor.apply();
     }
 
     private void calculateTotal() {
@@ -133,6 +154,8 @@ public class CheckoutActivity extends AppCompatActivity {
             postalEt.setError("Postal code is required");
             return;
         }
+
+        saveAddressLocal(name, phone, address, city, postal);
 
         int selectedPaymentId = paymentRadioGroup.getCheckedRadioButtonId();
         RadioButton paymentButton = findViewById(selectedPaymentId);
