@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.imeshperera.ecomapp.R;
 import com.imeshperera.ecomapp.models.NewProductModel;
+import com.imeshperera.ecomapp.models.MyCartModel;
 
 public class SingleproductActivity extends AppCompatActivity {
 
@@ -65,15 +66,15 @@ public class SingleproductActivity extends AppCompatActivity {
             return;
         }
 
-        int priceVal = 0;
+        double priceVal = 0.0;
         try {
-            String cleanPrice = newProductModel.getPrice().replaceAll("[^\\d]", "");
-            priceVal = Integer.parseInt(cleanPrice);
+            String cleanPrice = newProductModel.getPrice().replaceAll("[^\\d.]", "");
+            priceVal = Double.parseDouble(cleanPrice);
         } catch (Exception e) {
             // handle exception
         }
 
-        com.imeshperera.ecomapp.models.MyCartModel singleItem = new com.imeshperera.ecomapp.models.MyCartModel(
+        MyCartModel singleItem = new MyCartModel(
                 newProductModel.getName(),
                 newProductModel.getPrice(),
                 "1",
@@ -81,7 +82,7 @@ public class SingleproductActivity extends AppCompatActivity {
                 newProductModel.getImg_url()
         );
 
-        java.util.ArrayList<com.imeshperera.ecomapp.models.MyCartModel> list = new java.util.ArrayList<>();
+        java.util.ArrayList<MyCartModel> list = new java.util.ArrayList<>();
         list.add(singleItem);
 
         android.content.Intent intent = new android.content.Intent(this, CheckoutActivity.class);
@@ -107,10 +108,10 @@ public class SingleproductActivity extends AppCompatActivity {
         java.text.SimpleDateFormat currentTime = new java.text.SimpleDateFormat("HH:mm:ss a");
         saveCurrentTime = currentTime.format(calForDate.getTime());
 
-        int priceVal = 0;
+        double priceVal = 0.0;
         try {
-            String cleanPrice = newProductModel.getPrice().replaceAll("[^\\d]", "");
-            priceVal = Integer.parseInt(cleanPrice);
+            String cleanPrice = newProductModel.getPrice().replaceAll("[^\\d.]", "");
+            priceVal = Double.parseDouble(cleanPrice);
         } catch (Exception e) {
             // handle exception
         }

@@ -51,11 +51,16 @@
         </activity>
         <activity
             android:name=".activities.MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.ECommerceApp.NoActionBar">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+        <activity
+            android:name=".activities.ForgotPasswordActivity"
+            android:exported="false"
+            android:theme="@style/Theme.ECommerceApp.NoActionBar" />
         <activity
             android:name=".activities.CartActivity"
             android:exported="false"
