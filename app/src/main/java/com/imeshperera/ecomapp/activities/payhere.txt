@@ -1,0 +1,58 @@
+4. Initiate a Payment Request to PayHere Payment Gateway
+a. One-time Payment Request
+InitRequest req = new InitRequest();
+req.setMerchantId("1228819");       // Merchant ID
+req.setCurrency("LKR");             // Currency code LKR/USD/GBP/EUR/AUD
+req.setAmount(1000.00);             // Final Amount to be charged
+req.setOrderId("230000123");        // Unique Reference ID
+req.setItemsDescription("Door bell wireless");  // Item description title
+req.setCustom1("This is the custom message 1");
+req.setCustom2("This is the custom message 2");
+req.getCustomer().setFirstName("Saman");
+req.getCustomer().setLastName("Perera");
+req.getCustomer().setEmail("samanp@gmail.com");
+req.getCustomer().setPhone("+94771234567");
+req.getCustomer().getAddress().setAddress("No.1, Galle Road");
+req.getCustomer().getAddress().setCity("Colombo");
+req.getCustomer().getAddress().setCountry("Sri Lanka");
+
+//Optional Params
+req.setNotifyUrl(“xxxx”);           // Notifiy Url
+req.getCustomer().getDeliveryAddress().setAddress("No.2, Kandy Road");
+req.getCustomer().getDeliveryAddress().setCity("Kadawatha");
+req.getCustomer().getDeliveryAddress().setCountry("Sri Lanka");
+req.getItems().add(new Item(null, "Door bell wireless", 1, 1000.0));
+
+Intent intent = new Intent(this, PHMainActivity.class);
+intent.putExtra(PHConstants.INTENT_EXTRA_DATA, req);
+PHConfigs.setBaseUrl(PHConfigs.SANDBOX_URL);
+startActivityForResult(intent, PAYHERE_REQUEST); //unique request ID e.g. "11001"
+
+
+5. Fetch the Payment Status
+Example code show below.
+
+@Override
+protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+    if (requestCode == PAYHERE_REQUEST && data != null && data.hasExtra(PHConstants.INTENT_EXTRA_RESULT)) {
+        PHResponse<StatusResponse> response = (PHResponse<StatusResponse>) data.getSerializableExtra(PHConstants.INTENT_EXTRA_RESULT);
+        if (resultCode == Activity.RESULT_OK) {
+            String msg;
+            if (response != null)
+                if (response.isSuccess())
+                    msg = "Activity result:" + response.getData().toString();
+                else
+                    msg = "Result:" + response.toString();
+            else
+                msg = "Result: no response";
+            Log.d(TAG, msg);
+            textView.setText(msg);
+        } else if (resultCode == Activity.RESULT_CANCELED) {
+            if (response != null)
+                textView.setText(response.toString());
+            else
+                textView.setText("User canceled the request");
+        }
+    }
+}

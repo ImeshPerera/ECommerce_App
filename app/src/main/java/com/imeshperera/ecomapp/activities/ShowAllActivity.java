@@ -84,7 +84,7 @@ public class ShowAllActivity extends AppCompatActivity {
                     });
         } else {
             firestore.collection("New Products")
-                    .whereEqualTo("cat", type)
+                    .whereEqualTo("type", type)
                     .get()
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
