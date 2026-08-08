@@ -1,5 +1,6 @@
 package com.imeshperera.ecomapp.activities;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -29,7 +30,16 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
+import lk.payhere.androidsdk.PHConfigs;
+import lk.payhere.androidsdk.PHConstants;
+import lk.payhere.androidsdk.PHMainActivity;
+import lk.payhere.androidsdk.PHResponse;
+import lk.payhere.androidsdk.model.InitRequest;
+import lk.payhere.androidsdk.model.StatusResponse;
+
 public class CheckoutActivity extends AppCompatActivity {
+
+    private static final int PAYHERE_REQUEST = 11001;
 
     Toolbar toolbar;
     EditText nameEt, phoneEt, addressEt, cityEt, postalEt;
@@ -42,6 +52,7 @@ public class CheckoutActivity extends AppCompatActivity {
 
     List<MyCartModel> cartModelList;
     double totalAmount = 0.0;
+    private HashMap<String, Object> pendingOrderMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,8 +176,99 @@ public class CheckoutActivity extends AppCompatActivity {
         }
         orderMap.put("items", itemsList);
 
-        placeOrderBtn.setEnabled(false);
+        if ("Credit / Debit Card".equals(paymentMethod)) {
+            pendingOrderMap = orderMap;
+            startPayHerePayment(orderMap);
+        } else {
+            placeOrderBtn.setEnabled(false);
+            saveOrderToFirestore(orderMap);
+        }
+    }
 
+    private void startPayHerePayment(final HashMap<String, Object> orderMap) {
+        String email = auth.getCurrentUser() != null && auth.getCurrentUser().getEmail() != null
+                ? auth.getCurrentUser().getEmail()
+                : "customer@example.com";
+
+        String fullName = (String) orderMap.get("customerName");
+        String firstName = "Customer";
+        String lastName = "Name";
+        if (fullName != null) {
+            String[] parts = fullName.trim().split("\\s+", 2);
+            if (parts.length > 0) {
+                firstName = parts[0];
+            }
+            if (parts.length > 1) {
+                lastName = parts[1];
+            }
+        }
+
+        InitRequest req = new InitRequest();
+        req.setMerchantId("1228819");       // Merchant ID
+        req.setCurrency("LKR");             // Currency code
+        req.setAmount(totalAmount);         // Final Amount to be charged
+        
+        // Generate a unique order ID for the payment transaction
+        String orderId = "ORD-" + System.currentTimeMillis();
+        req.setOrderId(orderId);
+        
+        // Setup item description
+        StringBuilder descBuilder = new StringBuilder();
+        for (MyCartModel item : cartModelList) {
+            if (descBuilder.length() > 0) {
+                descBuilder.append(", ");
+            }
+            descBuilder.append(item.getProductName());
+        }
+        String desc = descBuilder.toString();
+        if (desc.length() > 100) {
+            desc = desc.substring(0, 97) + "...";
+        }
+        req.setItemsDescription(desc.isEmpty() ? "E-Commerce Purchase" : desc);
+
+        req.getCustomer().setFirstName(firstName);
+        req.getCustomer().setLastName(lastName);
+        req.getCustomer().setEmail(email);
+        String rawPhone = (String) orderMap.get("customerPhone");
+        String formattedPhone = rawPhone != null ? rawPhone.trim() : "";
+        if (!formattedPhone.startsWith("+")) {
+            if (formattedPhone.startsWith("0")) {
+                formattedPhone = "+94" + formattedPhone.substring(1);
+            } else if (!formattedPhone.isEmpty()) {
+                formattedPhone = "+94" + formattedPhone;
+            }
+        }
+        req.getCustomer().setPhone(formattedPhone);
+        req.getCustomer().getAddress().setAddress((String) orderMap.get("shippingAddress"));
+        req.getCustomer().getAddress().setCity((String) orderMap.get("city"));
+        req.getCustomer().getAddress().setCountry("Sri Lanka");
+
+        // Optional Params
+        // req.setNotifyUrl("xxxx"); 
+        
+        for (MyCartModel model : cartModelList) {
+            double price = 0.0;
+            try {
+                price = Double.parseDouble(model.getProductPrice().replaceAll("[^\\d.]", ""));
+            } catch (Exception e) {
+                price = model.getTotalPrice();
+            }
+            int qty = 1;
+            try {
+                qty = Integer.parseInt(model.getTotalQuantity());
+            } catch (Exception e) {
+                // Ignore
+            }
+            req.getItems().add(new lk.payhere.androidsdk.model.Item(null, model.getProductName(), qty, price));
+        }
+
+        android.content.Intent intent = new android.content.Intent(this, PHMainActivity.class);
+        intent.putExtra(PHConstants.INTENT_EXTRA_DATA, req);
+        PHConfigs.setBaseUrl(PHConfigs.SANDBOX_URL);
+        startActivityForResult(intent, PAYHERE_REQUEST);
+    }
+
+    private void saveOrderToFirestore(HashMap<String, Object> orderMap) {
         firestore.collection("PlacedOrders")
                 .add(orderMap)
                 .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
@@ -181,6 +283,44 @@ public class CheckoutActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, android.content.Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PAYHERE_REQUEST && data != null && data.hasExtra(PHConstants.INTENT_EXTRA_RESULT)) {
+            PHResponse<StatusResponse> response = (PHResponse<StatusResponse>) data.getSerializableExtra(PHConstants.INTENT_EXTRA_RESULT);
+            if (resultCode == Activity.RESULT_OK) {
+                if (response != null && response.isSuccess()) {
+                    Toast.makeText(this, "Payment Successful!", Toast.LENGTH_SHORT).show();
+                    if (pendingOrderMap != null) {
+                        pendingOrderMap.put("paymentStatus", "Paid");
+                        if (response.getData() != null) {
+                            pendingOrderMap.put("paymentDetails", response.getData().toString());
+                        }
+                        placeOrderBtn.setEnabled(false);
+                        saveOrderToFirestore(pendingOrderMap);
+                    } else {
+                        Toast.makeText(this, "Error completing order data.", Toast.LENGTH_SHORT).show();
+                        placeOrderBtn.setEnabled(true);
+                    }
+                } else {
+                    String errorMsg = (response != null) ? response.toString() : "Payment failed";
+                    android.util.Log.e("PayHereError", "Payment Failed response: " + errorMsg);
+                    Toast.makeText(this, "Payment Failed: " + errorMsg, Toast.LENGTH_LONG).show();
+                    placeOrderBtn.setEnabled(true);
+                }
+            } else if (resultCode == Activity.RESULT_CANCELED) {
+                if (response != null) {
+                    android.util.Log.e("PayHereError", "Payment Canceled response: " + response.toString());
+                    Toast.makeText(this, "Payment Canceled: " + response.toString(), Toast.LENGTH_SHORT).show();
+                } else {
+                    android.util.Log.e("PayHereError", "Payment Canceled: null response");
+                    Toast.makeText(this, "Payment Canceled", Toast.LENGTH_SHORT).show();
+                }
+                placeOrderBtn.setEnabled(true);
+            }
+        }
     }
 
     private void clearCartAndFinish() {
