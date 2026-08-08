@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "4770498617",
+    "project_id": "ecommerce-app-44f11",
+    "storage_bucket": "ecommerce-app-44f11.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:4770498617:android:83cd96eecf677ec0c565e8",
+        "android_client_info": {
+          "package_name": "com.imeshperera.ecomapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCmgniW64T2PJhtU0JzTraVjTAg_cnsJGU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
