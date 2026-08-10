@@ -7,6 +7,7 @@ public class MyCartModel implements Serializable {
     String productName;
     String productPrice;
     String totalQuantity;
+    int quantity;
     double totalPrice;
     String imgUrl;
     String documentId;
@@ -52,6 +53,14 @@ public class MyCartModel implements Serializable {
 
     public void setTotalQuantity(String totalQuantity) {
         this.totalQuantity = totalQuantity;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 
     public double getTotalPrice() {

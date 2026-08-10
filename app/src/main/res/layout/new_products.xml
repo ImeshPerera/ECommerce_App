@@ -12,33 +12,49 @@
         android:layout_height="match_parent"
         android:paddingBottom="4dp">
 
-        <ImageView
-            android:id="@+id/new_img"
+        <!-- Image with heart overlay -->
+        <FrameLayout
+            android:id="@+id/new_prod_img_frame"
             android:layout_width="135dp"
             android:layout_height="135dp"
             android:layout_marginTop="8dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/milk"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="#62B9FF"
-            android:fontFamily="@font/baskervville"
-            android:padding="6dp"
-            android:text="New"
-            android:textColor="@color/black"
-            android:textAlignment="center"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/new_img"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.1" />
+            <ImageView
+                android:id="@+id/new_img"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitCenter"
+                android:src="@drawable/milk" />
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|start"
+                android:background="#62B9FF"
+                android:fontFamily="@font/baskervville"
+                android:padding="6dp"
+                android:text="New"
+                android:textColor="@color/black"
+                android:textAlignment="center"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <ImageButton
+                android:id="@+id/new_prod_wishlist_btn"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:layout_gravity="top|end"
+                android:layout_margin="4dp"
+                android:src="@drawable/heart"
+                android:background="@drawable/white_circular_border"
+                android:padding="5dp"
+                android:scaleType="fitCenter" />
+
+        </FrameLayout>
 
         <TextView
             android:id="@+id/new_product_name"
@@ -52,7 +68,7 @@
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/new_img" />
+            app:layout_constraintTop_toBottomOf="@+id/new_prod_img_frame" />
 
         <TextView
             android:id="@+id/new_product_brand"
@@ -103,7 +119,6 @@
                 app:layout_constraintStart_toEndOf="@+id/dollar"
                 app:layout_constraintTop_toTopOf="@+id/dollar"
                 app:layout_constraintVertical_bias="1.0" />
-
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>

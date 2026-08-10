@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
@@ -17,6 +18,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -28,13 +31,18 @@ import com.imeshperera.ecomapp.models.CategoryModel;
 import com.imeshperera.ecomapp.models.NewProductModel;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements FilterBottomSheetFragment.FilterListener {
 
     LinearLayout linearLayout;
     ProgressDialog progressDialog;
     RecyclerView catRecyclerview, newProductRecyclerview, allProductRecyclerview;
+    ImageButton filterBtn;
     //Categories
     CategoryAdapter categoryAdapter;
     NewProductAdapter newProductAdapter;
@@ -43,12 +51,15 @@ public class HomeFragment extends Fragment {
     List<NewProductModel> newProductModelList, allProductModelList;
     List<NewProductModel> originalAllProductList;
 
+    // Filter state
+    String currentSortOption = "none";
+    Set<String> currentSelectedBrands = new HashSet<>();
+    String currentSearchText = "";
+
     //Firestorm
     FirebaseFirestore db;
 
-    public HomeFragment() {
-
-    }
+    public HomeFragment() {}
 
     @SuppressLint("MissingInflatedId")
     @Nullable
@@ -62,6 +73,7 @@ public class HomeFragment extends Fragment {
         catRecyclerview = root.findViewById(R.id.rec_category);
         newProductRecyclerview = root.findViewById(R.id.new_product_rec);
         allProductRecyclerview = root.findViewById(R.id.all_rec);
+        filterBtn = root.findViewById(R.id.filter_btn);
 
         android.widget.TextView catSeeAll = root.findViewById(R.id.category_see_all);
         android.widget.TextView newSeeAll = root.findViewById(R.id.newProducts_see_all);
@@ -90,8 +102,27 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void afterTextChanged(android.text.Editable s) {
-                filter(s.toString());
+                currentSearchText = s.toString();
+                applyFilterAndSort(currentSortOption, currentSelectedBrands);
             }
+        });
+
+        // Filter button
+        filterBtn.setOnClickListener(v -> {
+            // Collect unique brands
+            List<String> brands = new ArrayList<>();
+            Set<String> brandSet = new HashSet<>();
+            for (NewProductModel model : originalAllProductList) {
+                if (model.getBrand() != null && !brandSet.contains(model.getBrand())) {
+                    brandSet.add(model.getBrand());
+                    brands.add(model.getBrand());
+                }
+            }
+
+            FilterBottomSheetFragment filterSheet = FilterBottomSheetFragment.newInstance(
+                    brands, currentSortOption, currentSelectedBrands);
+            filterSheet.setFilterListener(HomeFragment.this);
+            filterSheet.show(getChildFragmentManager(), "FilterSheet");
         });
 
         progressDialog.setTitle("Welcome to Phone House");
@@ -103,12 +134,12 @@ public class HomeFragment extends Fragment {
         linearLayout = root.findViewById(R.id.home_layout);
         linearLayout.setVisibility(View.GONE);
 
-        catRecyclerview.setLayoutManager(new LinearLayoutManager(getActivity(),RecyclerView.HORIZONTAL,false));
-        newProductRecyclerview.setLayoutManager(new LinearLayoutManager(getActivity(),RecyclerView.HORIZONTAL,false));
-        allProductRecyclerview.setLayoutManager(new GridLayoutManager(getActivity(),2));
+        catRecyclerview.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.HORIZONTAL, false));
+        newProductRecyclerview.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.HORIZONTAL, false));
+        allProductRecyclerview.setLayoutManager(new GridLayoutManager(getActivity(), 2));
 
         categoryModelList = new ArrayList<>();
-        categoryAdapter = new CategoryAdapter(getContext(),categoryModelList);
+        categoryAdapter = new CategoryAdapter(getContext(), categoryModelList);
         catRecyclerview.setAdapter(categoryAdapter);
         db.collection("Category")
                 .get()
@@ -121,14 +152,12 @@ public class HomeFragment extends Fragment {
                                 categoryModelList.add(categoryModel);
                                 categoryAdapter.notifyDataSetChanged();
                             }
-                        } else {
-
                         }
                     }
                 });
 
         allProductModelList = new ArrayList<>();
-        allProductAdapter = new AllProductAdapter(getContext(),allProductModelList);
+        allProductAdapter = new AllProductAdapter(getContext(), allProductModelList);
         allProductRecyclerview.setAdapter(allProductAdapter);
         db.collection("New Products")
                 .get()
@@ -144,14 +173,15 @@ public class HomeFragment extends Fragment {
                                 linearLayout.setVisibility(View.VISIBLE);
                                 progressDialog.dismiss();
                             }
-                        } else {
 
+                            // Load wishlist state for current user
+                            loadWishlistState();
                         }
                     }
                 });
 
         newProductModelList = new ArrayList<>();
-        newProductAdapter = new NewProductAdapter(getContext(),newProductModelList);
+        newProductAdapter = new NewProductAdapter(getContext(), newProductModelList);
         newProductRecyclerview.setAdapter(newProductAdapter);
         db.collection("New Products")
                 .whereEqualTo("cat", "new")
@@ -165,24 +195,113 @@ public class HomeFragment extends Fragment {
                                 newProductModelList.add(productModel);
                                 newProductAdapter.notifyDataSetChanged();
                             }
-                        } else {
-
                         }
                     }
                 });
 
-
         return root;
     }
 
-    private void filter(String text) {
-        List<NewProductModel> filteredList = new ArrayList<>();
+    private void loadWishlistState() {
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        if (auth.getCurrentUser() == null) return;
+        String uid = auth.getCurrentUser().getUid();
+
+        db.collection("wishlist").document(uid).collection("items")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        Set<String> wishlisted = new HashSet<>();
+                        for (DocumentSnapshot doc : task.getResult().getDocuments()) {
+                            String name = doc.getString("name");
+                            if (name != null) wishlisted.add(name);
+                        }
+                        if (allProductAdapter != null) allProductAdapter.setWishlistedNames(wishlisted);
+                        if (newProductAdapter != null) newProductAdapter.setWishlistedNames(wishlisted);
+                    }
+                });
+    }
+
+    @Override
+    public void onFilterApplied(String sortOption, Set<String> selectedBrands) {
+        currentSortOption = sortOption;
+        currentSelectedBrands = selectedBrands;
+        applyFilterAndSort(sortOption, selectedBrands);
+    }
+
+    private void applyFilterAndSort(String sortOption, Set<String> selectedBrands) {
+        List<NewProductModel> filtered = new ArrayList<>();
+
         for (NewProductModel item : originalAllProductList) {
-            if ((item.getName() != null && item.getName().toLowerCase().contains(text.toLowerCase())) ||
-                    (item.getBrand() != null && item.getBrand().toLowerCase().contains(text.toLowerCase()))) {
-                filteredList.add(item);
+            // Text search filter
+            boolean matchesSearch = currentSearchText.isEmpty() ||
+                    (item.getName() != null && item.getName().toLowerCase().contains(currentSearchText.toLowerCase())) ||
+                    (item.getBrand() != null && item.getBrand().toLowerCase().contains(currentSearchText.toLowerCase()));
+
+            // Brand filter
+            boolean matchesBrand = selectedBrands.isEmpty() ||
+                    (item.getBrand() != null && selectedBrands.contains(item.getBrand()));
+
+            if (matchesSearch && matchesBrand) {
+                filtered.add(item);
             }
         }
-        allProductAdapter.setFilteredList(filteredList);
+
+        // Sort
+        switch (sortOption) {
+            case "price_low":
+                Collections.sort(filtered, (a, b) -> {
+                    double pa = parsePrice(a.getPrice());
+                    double pb = parsePrice(b.getPrice());
+                    return Double.compare(pa, pb);
+                });
+                break;
+            case "price_high":
+                Collections.sort(filtered, (a, b) -> {
+                    double pa = parsePrice(a.getPrice());
+                    double pb = parsePrice(b.getPrice());
+                    return Double.compare(pb, pa);
+                });
+                break;
+            case "rating":
+                Collections.sort(filtered, (a, b) -> {
+                    double ra = parseRating(a.getRate());
+                    double rb = parseRating(b.getRate());
+                    return Double.compare(rb, ra);
+                });
+                break;
+            case "az":
+                Collections.sort(filtered, (a, b) -> {
+                    String na = a.getName() != null ? a.getName() : "";
+                    String nb = b.getName() != null ? b.getName() : "";
+                    return na.compareToIgnoreCase(nb);
+                });
+                break;
+            default:
+                // no sort
+                break;
+        }
+
+        if (allProductAdapter != null) {
+            allProductAdapter.setFilteredList(filtered);
+        }
+    }
+
+    private double parsePrice(String price) {
+        if (price == null) return 0.0;
+        try {
+            return Double.parseDouble(price.replaceAll("[^\\d.]", ""));
+        } catch (Exception e) {
+            return 0.0;
+        }
+    }
+
+    private double parseRating(String rate) {
+        if (rate == null) return 0.0;
+        try {
+            return Double.parseDouble(rate.replaceAll("[^\\d.]", ""));
+        } catch (Exception e) {
+            return 0.0;
+        }
     }
 }

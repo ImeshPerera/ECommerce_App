@@ -5,11 +5,12 @@ import java.io.Serializable;
 public class NewProductModel implements Serializable {
 
     String img_url, name, brand, rate, detail, price, type;
+    int stock;
 
     public NewProductModel() {
     }
 
-    public NewProductModel(String img_url, String name, String brand, String detail, String price, String rate, String type) {
+    public NewProductModel(String img_url, String name, String brand, String detail, String price, String rate, String type, int stock) {
         this.img_url = img_url;
         this.name = name;
         this.rate = rate;
@@ -17,6 +18,7 @@ public class NewProductModel implements Serializable {
         this.detail = detail;
         this.price = price;
         this.type = type;
+        this.stock = stock;
     }
 
     public void setImg_url(String img_url) {
@@ -43,6 +45,8 @@ public class NewProductModel implements Serializable {
 
     public void setType(String type) { this.type = type; }
 
+    public void setStock(int stock) { this.stock = stock; }
+
     public String getImg_url() {
         return img_url;
     }
@@ -66,4 +70,6 @@ public class NewProductModel implements Serializable {
     public String getRate() { return rate; }
 
     public String getType() { return type; }
+
+    public int getStock() { return stock; }
 }

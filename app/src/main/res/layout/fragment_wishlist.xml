@@ -1,31 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center"
     android:background="#F5F5F5">
 
-    <ImageView
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:src="@drawable/ic_wishlist"
-        android:alpha="0.4" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/wishlist_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="6dp"
+        android:clipToPadding="false" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Your wishlist is empty"
-        android:textSize="18sp"
-        android:textColor="#757575"
-        android:layout_marginTop="16dp" />
+    <!-- Empty state -->
+    <LinearLayout
+        android:id="@+id/wishlist_empty_state"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="gone">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Save items you love here"
-        android:textSize="14sp"
-        android:textColor="#9E9E9E"
-        android:layout_marginTop="8dp" />
+        <ImageView
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:src="@drawable/ic_wishlist"
+            android:alpha="0.4" />
 
-</LinearLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Your wishlist is empty"
+            android:textSize="18sp"
+            android:textColor="#757575"
+            android:layout_marginTop="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Save items you love by tapping ♥ on any product"
+            android:textSize="14sp"
+            android:textColor="#9E9E9E"
+            android:gravity="center"
+            android:layout_marginTop="8dp"
+            android:paddingHorizontal="32dp" />
+
+    </LinearLayout>
+
+</FrameLayout>
