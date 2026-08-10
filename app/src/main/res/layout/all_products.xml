@@ -15,16 +15,48 @@
         android:background="@color/white"
         android:paddingBottom="8dp">
 
-        <ImageView
-            android:id="@+id/prod_img"
+        <!-- Image + heart overlay -->
+        <FrameLayout
+            android:id="@+id/prod_img_frame"
             android:layout_width="135dp"
             android:layout_height="135dp"
             android:layout_marginTop="8dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/milk"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/prod_img"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitCenter"
+                android:src="@drawable/milk" />
+
+            <ImageButton
+                android:id="@+id/prod_wishlist_btn"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_gravity="top|end"
+                android:layout_margin="4dp"
+                android:src="@drawable/heart"
+                android:background="@drawable/white_circular_border"
+                android:padding="5dp"
+                android:scaleType="fitCenter" />
+
+            <TextView
+                android:id="@+id/prod_out_of_stock_badge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|start"
+                android:text="Out of Stock"
+                android:textColor="@color/white"
+                android:background="#F44336"
+                android:padding="3dp"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+        </FrameLayout>
 
         <TextView
             android:id="@+id/prod_name"
@@ -38,7 +70,7 @@
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/prod_img" />
+            app:layout_constraintTop_toBottomOf="@+id/prod_img_frame" />
 
         <TextView
             android:id="@+id/prod_brand"
@@ -106,5 +138,7 @@
             app:layout_constraintEnd_toEndOf="@+id/constraintLayout"
             app:layout_constraintStart_toStartOf="@+id/constraintLayout"
             app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.cardview.widget.CardView>

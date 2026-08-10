@@ -20,6 +20,7 @@
             android:src="@drawable/milk" />
 
         <LinearLayout
+            android:id="@+id/cart_text_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
@@ -44,19 +45,58 @@
                 android:id="@+id/cart_prod_price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="4dp"
                 android:text="Rs. 20,000"
                 android:textColor="@color/pink"
-                android:textSize="16sp" />
+                android:textSize="14sp" />
 
-            <TextView
-                android:id="@+id/cart_prod_qty"
+            <!-- Quantity controls -->
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:text="Quantity: 1"
-                android:textColor="@color/black"
-                android:textSize="14sp" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="6dp">
+
+                <ImageButton
+                    android:id="@+id/cart_qty_minus"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:src="@drawable/iconminus"
+                    android:background="@drawable/grey_circular_border"
+                    android:padding="5dp"
+                    android:scaleType="fitCenter" />
+
+                <TextView
+                    android:id="@+id/cart_qty_tv"
+                    android:layout_width="36dp"
+                    android:layout_height="wrap_content"
+                    android:text="1"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:textColor="@color/black" />
+
+                <ImageButton
+                    android:id="@+id/cart_qty_plus"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:src="@drawable/plusicon"
+                    android:background="@drawable/grey_circular_border"
+                    android:padding="5dp"
+                    android:scaleType="fitCenter" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/cart_item_total"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Total: Rs. 20,000"
+                android:textColor="#673AB7"
+                android:textSize="13sp"
+                android:textStyle="bold" />
 
         </LinearLayout>
 

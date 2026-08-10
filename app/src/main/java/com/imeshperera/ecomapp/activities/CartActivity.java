@@ -31,8 +31,9 @@ public class CartActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     List<MyCartModel> cartModelList;
     CartAdapter cartAdapter;
-    TextView overAllAmount;
+    TextView overAllAmount, subtotalTv, shippingTv;
     Button buyNowBtn;
+    double shippingFee = 0.0;
 
     FirebaseAuth auth;
     FirebaseFirestore firestore;
@@ -64,6 +65,8 @@ public class CartActivity extends AppCompatActivity {
         recyclerView.setAdapter(cartAdapter);
 
         overAllAmount = findViewById(R.id.total_price_tv);
+        subtotalTv = findViewById(R.id.subtotal_tv);
+        shippingTv = findViewById(R.id.shipping_tv);
         buyNowBtn = findViewById(R.id.buy_now_btn);
 
         if (auth.getCurrentUser() != null) {
@@ -98,6 +101,7 @@ public class CartActivity extends AppCompatActivity {
                 } else {
                     android.content.Intent intent = new android.content.Intent(CartActivity.this, CheckoutActivity.class);
                     intent.putExtra("itemList", (java.io.Serializable) cartModelList);
+                    intent.putExtra("shippingFee", shippingFee);
                     startActivity(intent);
                 }
             }
@@ -105,10 +109,33 @@ public class CartActivity extends AppCompatActivity {
     }
 
     public void calculateTotalAmount(List<MyCartModel> list) {
-        double totalAmount = 0.0;
+        double subtotal = 0.0;
         for (MyCartModel model : list) {
-            totalAmount += model.getTotalPrice();
+            subtotal += model.getTotalPrice();
         }
-        overAllAmount.setText("Rs. " + String.format("%,.2f", totalAmount));
+        
+        if (subtotal == 0) {
+            shippingFee = 0;
+        } else if (subtotal < 5000) {
+            shippingFee = 350.0;
+        } else {
+            shippingFee = 0.0;
+        }
+        
+        double grandTotal = subtotal + shippingFee;
+        
+        if (subtotalTv != null) subtotalTv.setText("Rs. " + String.format("%,.2f", subtotal));
+        
+        if (shippingTv != null) {
+            if (shippingFee == 0 && subtotal > 0) {
+                shippingTv.setText("FREE");
+            } else if (subtotal == 0) {
+                shippingTv.setText("Rs. 0.00");
+            } else {
+                shippingTv.setText("Rs. " + String.format("%,.2f", shippingFee));
+            }
+        }
+        
+        overAllAmount.setText("Rs. " + String.format("%,.2f", grandTotal));
     }
 }
