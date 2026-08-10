@@ -7,6 +7,24 @@
     android:background="@drawable/designlogin2"
     tools:context=".activities.LoginActivity">
 
+    <Button
+        android:id="@+id/google_signin_btn2"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="40dp"
+        android:background="@drawable/edit_text_bg"
+        android:backgroundTint="@color/purple_200"
+        android:text="Continue with Google"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/forgot_password_link"
+        app:layout_constraintVertical_bias="0.0" />
+
     <TextView
         android:id="@+id/textView"
         android:layout_width="84dp"
@@ -86,11 +104,12 @@
         android:id="@+id/forgot_password_link"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:onClick="toForgotPassword"
         android:text="Forgot Password?"
         android:textColor="@color/skyblue"
         android:textSize="14sp"
         android:textStyle="bold"
-        android:onClick="toForgotPassword"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/password"
         app:layout_constraintTop_toBottomOf="@+id/password"
@@ -100,17 +119,17 @@
         android:id="@+id/button"
         android:layout_width="174dp"
         android:layout_height="48dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="10dp"
         android:background="@drawable/edittext_bg"
         android:backgroundTint="@color/pink"
+        android:onClick="signin"
         android:text="Sign In"
         android:textStyle="bold"
-        android:onClick="signin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/forgot_password_link"
+        app:layout_constraintTop_toBottomOf="@+id/google_signin_btn2"
         app:layout_constraintVertical_bias="0.03" />
 
     <TextView

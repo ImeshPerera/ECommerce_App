@@ -124,8 +124,10 @@ public class InvoiceGenerator {
             sharePdf(activity, file);
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(activity, "Error generating PDF", Toast.LENGTH_SHORT).show();
-            document.close();
+            Toast.makeText(activity, "Error generating PDF: " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+            try {
+                document.close();
+            } catch (Exception ignored) {}
         }
     }
 
