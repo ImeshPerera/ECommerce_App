@@ -51,6 +51,43 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         }
+
+        View googleBtn = findViewById(R.id.google_signin_btn2);
+        if (googleBtn != null) {
+            googleBtn.setOnClickListener(v -> {
+                com.google.android.gms.auth.api.signin.GoogleSignInClient client = com.imeshperera.ecomapp.utils.GoogleSignInHelper.getClient(this);
+                startActivityForResult(client.getSignInIntent(), 1002);
+            });
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1002) {
+            Task<com.google.android.gms.auth.api.signin.GoogleSignInAccount> task = com.google.android.gms.auth.api.signin.GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                com.google.android.gms.auth.api.signin.GoogleSignInAccount account = task.getResult(com.google.android.gms.common.api.ApiException.class);
+                if (account != null && account.getIdToken() != null) {
+                    com.google.firebase.auth.AuthCredential credential = com.google.firebase.auth.GoogleAuthProvider.getCredential(account.getIdToken(), null);
+                    auth.signInWithCredential(credential).addOnCompleteListener(this, t -> {
+                        if (t.isSuccessful()) {
+                            Toast.makeText(this, "Google Sign-In Successful!", Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                            finish();
+                        } else {
+                            Toast.makeText(this, "Authentication Failed: " + (t.getException() != null ? t.getException().getMessage() : ""), Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+            } catch (com.google.android.gms.common.api.ApiException e) {
+                Toast.makeText(this, "Google Sign-In Failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    public void toForgotPassword(View view) {
+        startActivity(new Intent(LoginActivity.this, ForgotPasswordActivity.class));
     }
 
     public void toForgotPassword(View view) {
@@ -89,8 +126,9 @@ public class LoginActivity extends AppCompatActivity {
                 if(task.isSuccessful()) {
                     Toast.makeText(LoginActivity.this,"Log In Successful!",Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                    finish();
                 }else {
-                    Toast.makeText(LoginActivity.this,"Log In Failed!"+task.getException(),Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this,"Log In Failed!"+ (task.getException() != null ? task.getException().getMessage() : ""),Toast.LENGTH_SHORT).show();
                 }
             }
         });

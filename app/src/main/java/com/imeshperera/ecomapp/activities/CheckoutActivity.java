@@ -1,6 +1,7 @@
 package com.imeshperera.ecomapp.activities;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -44,13 +45,15 @@ public class CheckoutActivity extends AppCompatActivity {
     Toolbar toolbar;
     EditText nameEt, phoneEt, addressEt, cityEt, postalEt;
     RadioGroup paymentRadioGroup;
-    TextView subtotalTv;
+    TextView subtotalTv, shippingTv, totalTv;
     Button placeOrderBtn;
 
     FirebaseAuth auth;
     FirebaseFirestore firestore;
 
     List<MyCartModel> cartModelList;
+    double subtotalAmount = 0.0;
+    double shippingFee = 0.0;
     double totalAmount = 0.0;
     private HashMap<String, Object> pendingOrderMap;
 
@@ -81,6 +84,8 @@ public class CheckoutActivity extends AppCompatActivity {
         postalEt = findViewById(R.id.checkout_postal);
         paymentRadioGroup = findViewById(R.id.payment_radio_group);
         subtotalTv = findViewById(R.id.checkout_subtotal);
+        shippingTv = findViewById(R.id.checkout_shipping);
+        totalTv = findViewById(R.id.checkout_total);
         placeOrderBtn = findViewById(R.id.place_order_btn);
 
         loadSavedAddress();
@@ -89,6 +94,7 @@ public class CheckoutActivity extends AppCompatActivity {
         if (cartModelList == null) {
             cartModelList = new ArrayList<>();
         }
+        shippingFee = getIntent().getDoubleExtra("shippingFee", 0.0);
 
         calculateTotal();
 
@@ -120,11 +126,26 @@ public class CheckoutActivity extends AppCompatActivity {
     }
 
     private void calculateTotal() {
-        totalAmount = 0.0;
+        subtotalAmount = 0.0;
         for (MyCartModel model : cartModelList) {
-            totalAmount += model.getTotalPrice();
+            subtotalAmount += model.getTotalPrice();
         }
-        subtotalTv.setText("Rs. " + String.format("%,.2f", totalAmount));
+
+        if (shippingFee == 0.0 && subtotalAmount > 0 && subtotalAmount < 5000) {
+            shippingFee = 350.0;
+        }
+
+        totalAmount = subtotalAmount + shippingFee;
+
+        if (subtotalTv != null) subtotalTv.setText("Rs. " + String.format("%,.2f", subtotalAmount));
+        if (shippingTv != null) {
+            if (shippingFee == 0.0) {
+                shippingTv.setText("FREE");
+            } else {
+                shippingTv.setText("Rs. " + String.format("%,.2f", shippingFee));
+            }
+        }
+        if (totalTv != null) totalTv.setText("Rs. " + String.format("%,.2f", totalAmount));
     }
 
     private void placeOrder() {
@@ -182,6 +203,7 @@ public class CheckoutActivity extends AppCompatActivity {
         orderMap.put("city", city);
         orderMap.put("postalCode", postal);
         orderMap.put("paymentMethod", paymentMethod);
+        orderMap.put("shippingFee", shippingFee);
         orderMap.put("totalAmount", totalAmount);
         orderMap.put("orderDate", saveCurrentDate);
         orderMap.put("orderTime", saveCurrentTime);
@@ -309,9 +331,19 @@ public class CheckoutActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, android.content.Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PAYHERE_REQUEST && data != null && data.hasExtra(PHConstants.INTENT_EXTRA_RESULT)) {
+        if (requestCode == 2001 && resultCode == RESULT_OK && data != null) {
+            com.imeshperera.ecomapp.models.AddressModel selectedAddress = 
+                (com.imeshperera.ecomapp.models.AddressModel) data.getSerializableExtra("selected_address");
+            if (selectedAddress != null) {
+                if (selectedAddress.getName() != null) nameEt.setText(selectedAddress.getName());
+                if (selectedAddress.getPhone() != null) phoneEt.setText(selectedAddress.getPhone());
+                if (selectedAddress.getAddress() != null) addressEt.setText(selectedAddress.getAddress());
+                if (selectedAddress.getCity() != null) cityEt.setText(selectedAddress.getCity());
+                if (selectedAddress.getPostal() != null) postalEt.setText(selectedAddress.getPostal());
+            }
+        } else if (requestCode == PAYHERE_REQUEST && data != null && data.hasExtra(PHConstants.INTENT_EXTRA_RESULT)) {
             PHResponse<StatusResponse> response = (PHResponse<StatusResponse>) data.getSerializableExtra(PHConstants.INTENT_EXTRA_RESULT);
             if (resultCode == Activity.RESULT_OK) {
                 if (response != null && response.isSuccess()) {

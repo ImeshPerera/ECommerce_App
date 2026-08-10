@@ -45,6 +45,39 @@ public class RegistrationActivity extends AppCompatActivity {
         mobile = findViewById(R.id.mobile);
         email = findViewById(R.id.email);
         password = findViewById(R.id.password);
+
+        View googleBtn = findViewById(R.id.google_signin_btn);
+        if (googleBtn != null) {
+            googleBtn.setOnClickListener(v -> {
+                com.google.android.gms.auth.api.signin.GoogleSignInClient client = com.imeshperera.ecomapp.utils.GoogleSignInHelper.getClient(this);
+                startActivityForResult(client.getSignInIntent(), 1001);
+            });
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1001) {
+            Task<com.google.android.gms.auth.api.signin.GoogleSignInAccount> task = com.google.android.gms.auth.api.signin.GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                com.google.android.gms.auth.api.signin.GoogleSignInAccount account = task.getResult(com.google.android.gms.common.api.ApiException.class);
+                if (account != null && account.getIdToken() != null) {
+                    com.google.firebase.auth.AuthCredential credential = com.google.firebase.auth.GoogleAuthProvider.getCredential(account.getIdToken(), null);
+                    auth.signInWithCredential(credential).addOnCompleteListener(this, t -> {
+                        if (t.isSuccessful()) {
+                            Toast.makeText(this, "Google Sign-In Successful!", Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(RegistrationActivity.this, MainActivity.class));
+                            finish();
+                        } else {
+                            Toast.makeText(this, "Authentication Failed: " + (t.getException() != null ? t.getException().getMessage() : ""), Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+            } catch (com.google.android.gms.common.api.ApiException e) {
+                Toast.makeText(this, "Google Sign-In Failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
     public void signup(View view) {

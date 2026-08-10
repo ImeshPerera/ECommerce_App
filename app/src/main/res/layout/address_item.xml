@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="4dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp">
+
+        <RadioButton
+            android:id="@+id/radio_default"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:clickable="false"
+            android:focusable="false" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toStartOf="@id/action_buttons_layout"
+            android:layout_toEndOf="@id/radio_default"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_address_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Label"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_address_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Name"
+                android:textSize="14sp"
+                android:textColor="#333333" />
+
+            <TextView
+                android:id="@+id/tv_address_full"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Address"
+                android:textSize="14sp"
+                android:textColor="#555555" />
+
+            <TextView
+                android:id="@+id/tv_address_phone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Phone"
+                android:textSize="14sp"
+                android:textColor="#555555" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/action_buttons_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/btn_edit_address"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_menu_edit"
+                app:tint="?attr/colorPrimary" />
+
+            <ImageButton
+                android:id="@+id/btn_delete_address"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_menu_delete"
+                app:tint="@color/holo_red_dark" />
+        </LinearLayout>
+    </RelativeLayout>
+</androidx.cardview.widget.CardView>

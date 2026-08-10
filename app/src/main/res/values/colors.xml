@@ -9,6 +9,7 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="pink">#FF0057</color>
+    <color name="holo_red_dark">#FFFF4444</color>
     <color name="skyblue">#2196F3</color>
     <color name="orange">#FF9800</color>
 </resources>
