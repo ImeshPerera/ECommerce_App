@@ -160,15 +160,6 @@
                     android:layout_marginBottom="8dp" />
 
                 <Button
-                    android:id="@+id/btn_manage_addresses"
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:text="📍 Manage Addresses"
-                    android:textColor="#FF0057"
-                    android:backgroundTint="#FFF0F5"
-                    android:layout_marginBottom="8dp" />
-
-                <Button
                     android:id="@+id/profile_logout_btn"
                     android:layout_width="match_parent"
                     android:layout_height="52dp"

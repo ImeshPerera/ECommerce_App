@@ -55,29 +55,19 @@ public class OrdersFragment extends Fragment {
                 .whereEqualTo("userId", uid)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    List<com.imeshperera.ecomapp.models.OrderModel> ordersList = new ArrayList<>();
+                    List<Map<String, Object>> orders = new ArrayList<>();
                     for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                        com.imeshperera.ecomapp.models.OrderModel order = doc.toObject(com.imeshperera.ecomapp.models.OrderModel.class);
-                        order.setOrderId(doc.getId());
-                        ordersList.add(order);
+                        Map<String, Object> order = doc.getData();
+                        order.put("orderId", doc.getId());
+                        orders.add(order);
                     }
-                    
-                    if (ordersList.isEmpty()) {
+                    if (orders.isEmpty()) {
                         emptyState.setVisibility(View.VISIBLE);
                         recyclerView.setVisibility(View.GONE);
                     } else {
                         emptyState.setVisibility(View.GONE);
                         recyclerView.setVisibility(View.VISIBLE);
-                        
-                        // Sort by date (simple approach: assuming date and time can be parsed, or just reverse the list assuming newer items added later)
-                        java.util.Collections.reverse(ordersList);
-                        
-                        com.imeshperera.ecomapp.adapters.OrdersAdapter adapter = new com.imeshperera.ecomapp.adapters.OrdersAdapter(getContext(), ordersList, order -> {
-                            android.content.Intent intent = new android.content.Intent(getActivity(), com.imeshperera.ecomapp.activities.OrderDetailActivity.class);
-                            intent.putExtra("order", order);
-                            startActivity(intent);
-                        });
-                        recyclerView.setAdapter(adapter);
+                        // Full adapter will be wired in Phase 3
                     }
                 });
     }

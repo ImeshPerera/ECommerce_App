@@ -20,7 +20,7 @@ import com.imeshperera.ecomapp.R;
 
 public class LoginActivity extends AppCompatActivity {
 
-    EditText name,mobile,email,password;
+    EditText email, password;
     private FirebaseAuth auth;
     SharedPreferences sharedPreferences;
 
@@ -84,6 +84,10 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(this, "Google Sign-In Failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
             }
         }
+    }
+
+    public void toForgotPassword(View view) {
+        startActivity(new Intent(LoginActivity.this, ForgotPasswordActivity.class));
     }
 
     public void toForgotPassword(View view) {
