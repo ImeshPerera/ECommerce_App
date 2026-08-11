@@ -1,0 +1,97 @@
+{
+  "Category": {
+    "cat_shoes": {
+      "name": "Shoes",
+      "type": "shoes",
+      "img_url": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=600&q=80"
+    },
+    "cat_clothing": {
+      "name": "Clothing",
+      "type": "clothing",
+      "img_url": "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?auto=format&fit=crop&w=600&q=80"
+    },
+    "cat_watches": {
+      "name": "Watches",
+      "type": "watches",
+      "img_url": "https://images.unsplash.com/photo-1524805444758-089113d48a6d?auto=format&fit=crop&w=600&q=80"
+    },
+    "cat_bags": {
+      "name": "Bags",
+      "type": "bags",
+      "img_url": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=600&q=80"
+    },
+    "cat_electronics": {
+      "name": "Electronics",
+      "type": "electronics",
+      "img_url": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=600&q=80"
+    }
+  },
+  "New Products": {
+    "prod_1": {
+      "name": "Nike Air Max 270",
+      "brand": "Nike",
+      "type": "shoes",
+      "cat": "new",
+      "price": "150",
+      "rate": "4.8",
+      "stock": 25,
+      "img_url": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=600&q=80",
+      "detail": "The Nike Air Max 270 delivers visible air under every step. Updated for modern comfort, it pays homage to the original 180 Air Max."
+    },
+    "prod_2": {
+      "name": "Adidas Ultraboost Light",
+      "brand": "Adidas",
+      "type": "shoes",
+      "cat": "new",
+      "price": "180",
+      "rate": "4.7",
+      "stock": 15,
+      "img_url": "https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?auto=format&fit=crop&w=600&q=80",
+      "detail": "Experience epic energy with the new Ultraboost Light, our lightest Ultraboost ever made with high-performance cushioning."
+    },
+    "prod_3": {
+      "name": "Classic Leather Jacket",
+      "brand": "Urban Style",
+      "type": "clothing",
+      "cat": "new",
+      "price": "120",
+      "rate": "4.5",
+      "stock": 10,
+      "img_url": "https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=600&q=80",
+      "detail": "Premium genuine leather jacket crafted for longevity and timeless streetwear style."
+    },
+    "prod_4": {
+      "name": "Minimalist Analog Watch",
+      "brand": "Chronos",
+      "type": "watches",
+      "cat": "popular",
+      "price": "95",
+      "rate": "4.9",
+      "stock": 30,
+      "img_url": "https://images.unsplash.com/photo-1524805444758-089113d48a6d?auto=format&fit=crop&w=600&q=80",
+      "detail": "Sleek matte stainless steel finish with a genuine leather strap and Japanese quartz movement."
+    },
+    "prod_5": {
+      "name": "Travel Backpack",
+      "brand": "Nomad",
+      "type": "bags",
+      "cat": "popular",
+      "price": "65",
+      "rate": "4.6",
+      "stock": 40,
+      "img_url": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=600&q=80",
+      "detail": "Durable water-resistant backpack featuring dedicated 15-inch laptop sleeve and hidden anti-theft pocket."
+    },
+    "prod_6": {
+      "name": "Wireless Noise Cancelling Headphones",
+      "brand": "SoundPro",
+      "type": "electronics",
+      "cat": "new",
+      "price": "220",
+      "rate": "4.9",
+      "stock": 20,
+      "img_url": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=600&q=80",
+      "detail": "Immersive sound profile with active noise cancellation, 30-hour battery life, and ultra-soft memory foam earcups."
+    }
+  }
+}
