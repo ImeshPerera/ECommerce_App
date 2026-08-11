@@ -88,8 +88,31 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
             } catch (Exception e) {
                 currentQty = 1;
             }
-            int newQty = currentQty + 1;
-            updateQuantityInFirestore(model, newQty, position);
+            final int targetQty = currentQty + 1;
+
+            // Fetch stock limit for this product from Firestore
+            if (model.getProductName() != null) {
+                firestore.collection("New Products")
+                        .whereEqualTo("name", model.getProductName())
+                        .get()
+                        .addOnSuccessListener(queryDocumentSnapshots -> {
+                            int stock = Integer.MAX_VALUE;
+                            if (!queryDocumentSnapshots.isEmpty()) {
+                                Integer stockObj = queryDocumentSnapshots.getDocuments().get(0).get("stock", Integer.class);
+                                if (stockObj != null) stock = stockObj;
+                            }
+                            if (targetQty <= stock) {
+                                updateQuantityInFirestore(model, targetQty, position);
+                            } else {
+                                Toast.makeText(context, "Only " + stock + " items available in stock", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .addOnFailureListener(e -> {
+                            updateQuantityInFirestore(model, targetQty, position);
+                        });
+            } else {
+                updateQuantityInFirestore(model, targetQty, position);
+            }
         });
 
         // Delete button
