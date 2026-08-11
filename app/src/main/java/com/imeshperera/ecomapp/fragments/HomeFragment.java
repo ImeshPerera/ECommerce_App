@@ -73,7 +73,12 @@ public class HomeFragment extends Fragment implements FilterBottomSheetFragment.
         catRecyclerview = root.findViewById(R.id.rec_category);
         newProductRecyclerview = root.findViewById(R.id.new_product_rec);
         allProductRecyclerview = root.findViewById(R.id.all_rec);
-        filterBtn = root.findViewById(R.id.filter_btn);
+        ImageButton homeCartBtn = root.findViewById(R.id.home_cart_btn);
+        if (homeCartBtn != null) {
+            homeCartBtn.setOnClickListener(v -> {
+                startActivity(new android.content.Intent(getActivity(), com.imeshperera.ecomapp.activities.CartActivity.class));
+            });
+        }
 
         android.widget.TextView catSeeAll = root.findViewById(R.id.category_see_all);
         android.widget.TextView newSeeAll = root.findViewById(R.id.newProducts_see_all);
@@ -108,31 +113,38 @@ public class HomeFragment extends Fragment implements FilterBottomSheetFragment.
         });
 
         // Filter button
-        filterBtn.setOnClickListener(v -> {
-            // Collect unique brands
-            List<String> brands = new ArrayList<>();
-            Set<String> brandSet = new HashSet<>();
-            for (NewProductModel model : originalAllProductList) {
-                if (model.getBrand() != null && !brandSet.contains(model.getBrand())) {
-                    brandSet.add(model.getBrand());
-                    brands.add(model.getBrand());
+        if (filterBtn != null) {
+            filterBtn.setOnClickListener(v -> {
+                // Collect unique brands
+                List<String> brands = new ArrayList<>();
+                Set<String> brandSet = new HashSet<>();
+                for (NewProductModel model : originalAllProductList) {
+                    if (model.getBrand() != null && !brandSet.contains(model.getBrand())) {
+                        brandSet.add(model.getBrand());
+                        brands.add(model.getBrand());
+                    }
                 }
-            }
 
-            FilterBottomSheetFragment filterSheet = FilterBottomSheetFragment.newInstance(
-                    brands, currentSortOption, currentSelectedBrands);
-            filterSheet.setFilterListener(HomeFragment.this);
-            filterSheet.show(getChildFragmentManager(), "FilterSheet");
-        });
+                FilterBottomSheetFragment filterSheet = FilterBottomSheetFragment.newInstance(
+                        brands, currentSortOption, currentSelectedBrands);
+                filterSheet.setFilterListener(HomeFragment.this);
+                filterSheet.show(getChildFragmentManager(), "FilterSheet");
+            });
+        }
 
-        progressDialog.setTitle("Welcome to Phone House");
+        progressDialog.setTitle("Welcome to ECommerce App");
         progressDialog.setMessage("Please wait....");
         progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.show();
 
+        com.facebook.shimmer.ShimmerFrameLayout shimmerNewProducts = root.findViewById(R.id.shimmer_new_products);
+        com.facebook.shimmer.ShimmerFrameLayout shimmerPopularProducts = root.findViewById(R.id.shimmer_popular_products);
+
+        if (shimmerNewProducts != null) shimmerNewProducts.startShimmer();
+        if (shimmerPopularProducts != null) shimmerPopularProducts.startShimmer();
+
         db = FirebaseFirestore.getInstance();
         linearLayout = root.findViewById(R.id.home_layout);
-        linearLayout.setVisibility(View.GONE);
 
         catRecyclerview.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.HORIZONTAL, false));
         newProductRecyclerview.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.HORIZONTAL, false));
@@ -169,8 +181,15 @@ public class HomeFragment extends Fragment implements FilterBottomSheetFragment.
                                 NewProductModel allproductModel = document.toObject(NewProductModel.class);
                                 allProductModelList.add(allproductModel);
                                 originalAllProductList.add(allproductModel);
-                                allProductAdapter.notifyDataSetChanged();
-                                linearLayout.setVisibility(View.VISIBLE);
+                            }
+                            allProductAdapter.notifyDataSetChanged();
+
+                            if (shimmerPopularProducts != null) {
+                                shimmerPopularProducts.stopShimmer();
+                                shimmerPopularProducts.setVisibility(View.GONE);
+                            }
+                            allProductRecyclerview.setVisibility(View.VISIBLE);
+                            if (progressDialog != null && progressDialog.isShowing()) {
                                 progressDialog.dismiss();
                             }
 
@@ -193,8 +212,14 @@ public class HomeFragment extends Fragment implements FilterBottomSheetFragment.
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 NewProductModel productModel = document.toObject(NewProductModel.class);
                                 newProductModelList.add(productModel);
-                                newProductAdapter.notifyDataSetChanged();
                             }
+                            newProductAdapter.notifyDataSetChanged();
+
+                            if (shimmerNewProducts != null) {
+                                shimmerNewProducts.stopShimmer();
+                                shimmerNewProducts.setVisibility(View.GONE);
+                            }
+                            newProductRecyclerview.setVisibility(View.VISIBLE);
                         }
                     }
                 });
@@ -280,6 +305,17 @@ public class HomeFragment extends Fragment implements FilterBottomSheetFragment.
             default:
                 // no sort
                 break;
+        }
+
+        View catSection = getView() != null ? getView().findViewById(R.id.rec_category) : null;
+        View newProdSection = getView() != null ? getView().findViewById(R.id.new_product_rec) : null;
+        
+        if (!currentSearchText.trim().isEmpty()) {
+            if (catSection != null) catSection.setVisibility(View.GONE);
+            if (newProdSection != null) newProdSection.setVisibility(View.GONE);
+        } else {
+            if (catSection != null) catSection.setVisibility(View.VISIBLE);
+            if (newProdSection != null) newProdSection.setVisibility(View.VISIBLE);
         }
 
         if (allProductAdapter != null) {

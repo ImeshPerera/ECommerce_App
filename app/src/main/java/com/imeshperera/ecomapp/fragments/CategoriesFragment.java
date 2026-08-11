@@ -26,7 +26,7 @@ import java.util.List;
 public class CategoriesFragment extends Fragment {
 
     RecyclerView recyclerView;
-    CategoryAdapter adapter;
+    com.imeshperera.ecomapp.adapters.CategoryGridAdapter adapter;
     List<CategoryModel> categoryList;
     FirebaseFirestore db;
 
@@ -40,10 +40,10 @@ public class CategoriesFragment extends Fragment {
 
         db = FirebaseFirestore.getInstance();
         recyclerView = root.findViewById(R.id.categories_grid_rv);
-        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        recyclerView.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(getContext()));
 
         categoryList = new ArrayList<>();
-        adapter = new CategoryAdapter(getContext(), categoryList);
+        adapter = new com.imeshperera.ecomapp.adapters.CategoryGridAdapter(getContext(), categoryList);
         recyclerView.setAdapter(adapter);
 
         loadCategories();

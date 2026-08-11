@@ -14,6 +14,38 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="12dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="4dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:fontFamily="@font/baskervville"
+                android:text="ECommerce App"
+                android:textColor="@color/pink"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <ImageButton
+                android:id="@+id/home_cart_btn"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/white_circular_border"
+                android:contentDescription="Cart"
+                android:padding="9dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/trolley" />
+
+        </RelativeLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -132,13 +164,31 @@
                         android:textStyle="bold" />
                 </RelativeLayout>
 
+                <com.facebook.shimmer.ShimmerFrameLayout
+                    android:id="@+id/shimmer_new_products"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:shimmer_auto_start="true">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <include layout="@layout/shimmer_product_horizontal" />
+                        <include layout="@layout/shimmer_product_horizontal" />
+                        <include layout="@layout/shimmer_product_horizontal" />
+                    </LinearLayout>
+
+                </com.facebook.shimmer.ShimmerFrameLayout>
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/new_product_rec"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="7dp"
                     android:layout_marginTop="6dp"
-                    android:padding="5dp" />
+                    android:padding="5dp"
+                    android:visibility="gone" />
             </LinearLayout>
 
         </androidx.cardview.widget.CardView>
@@ -169,18 +219,48 @@
                     android:layout_marginLeft="9dp"
                     android:text="We provide best products." />
 
-                <TextView
-                    android:id="@+id/popular_see_all"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginRight="8dp"
-                    android:fontFamily="@font/baskervville"
-                    android:text="See All"
-                    android:textColor="@color/pink"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/popular_see_all"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginRight="8dp"
+                        android:fontFamily="@font/baskervville"
+                        android:text="See All"
+                        android:textColor="@color/pink"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
             </RelativeLayout>
+
+            <com.facebook.shimmer.ShimmerFrameLayout
+                android:id="@+id/shimmer_popular_products"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:shimmer_auto_start="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <include layout="@layout/shimmer_product_grid" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" />
+                        <include layout="@layout/shimmer_product_grid" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <include layout="@layout/shimmer_product_grid" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" />
+                        <include layout="@layout/shimmer_product_grid" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" />
+                    </LinearLayout>
+                </LinearLayout>
+
+            </com.facebook.shimmer.ShimmerFrameLayout>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/all_rec"
@@ -189,7 +269,8 @@
                 android:layout_gravity="center"
                 android:layout_margin="7dp"
                 android:layout_marginTop="6dp"
-                android:padding="5dp" />
+                android:padding="5dp"
+                android:visibility="gone" />
         </LinearLayout>
 
     </LinearLayout>

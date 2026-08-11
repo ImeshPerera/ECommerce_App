@@ -131,9 +131,17 @@ public class AllProductAdapter extends RecyclerView.Adapter<AllProductAdapter.Vi
         }
 
         holder.itemView.setOnClickListener(v -> {
+            v.startAnimation(android.view.animation.AnimationUtils.loadAnimation(context, R.anim.scale_bounce));
             Intent intent = new Intent(context, SingleproductActivity.class);
             intent.putExtra("detailed", model);
-            context.startActivity(intent);
+
+            if (context instanceof android.app.Activity) {
+                androidx.core.app.ActivityOptionsCompat options = androidx.core.app.ActivityOptionsCompat.
+                        makeSceneTransitionAnimation((android.app.Activity) context, holder.prodImage, "product_image_transition");
+                context.startActivity(intent, options.toBundle());
+            } else {
+                context.startActivity(intent);
+            }
         });
     }
 
