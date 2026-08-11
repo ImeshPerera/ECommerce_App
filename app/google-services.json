@@ -1,41 +1,44 @@
+// This file needs to be replace with your google-services.json
+// You can find this on application settings - general - SDK setup and configuration
+
 {
   "project_info": {
-    "project_number": "4770498617",
-    "project_id": "ecommerce-app-44f11",
-    "storage_bucket": "ecommerce-app-44f11.appspot.com"
+    "project_number": "",
+    "project_id": "ecommerce-app",
+    "storage_bucket": "ecommerce-app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:4770498617:android:83cd96eecf677ec0c565e8",
+        "mobilesdk_app_id": "",
         "android_client_info": {
           "package_name": "com.imeshperera.ecomapp"
         }
       },
       "oauth_client": [
         {
-          "client_id": "4770498617-mvrj5f09rfqed6qenpdjh06k335g9js8.apps.googleusercontent.com",
+          "client_id": "",
           "client_type": 1,
           "android_info": {
             "package_name": "com.imeshperera.ecomapp",
-            "certificate_hash": "96313d42b8d382b4138a32f5dd021046fb4694b4"
+            "certificate_hash": ""
           }
         },
         {
-          "client_id": "4770498617-9e677ccs283ovam0v9n9h16oo6rmaqe9.apps.googleusercontent.com",
+          "client_id": "",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCmgniW64T2PJhtU0JzTraVjTAg_cnsJGU"
+          "current_key": ""
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "4770498617-9e677ccs283ovam0v9n9h16oo6rmaqe9.apps.googleusercontent.com",
+              "client_id": "",
               "client_type": 3
             }
           ]
