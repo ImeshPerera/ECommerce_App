@@ -98,6 +98,15 @@ public class CheckoutActivity extends AppCompatActivity {
 
         calculateTotal();
 
+        View btnPickAddress = findViewById(R.id.btn_pick_address);
+        if (btnPickAddress != null) {
+            btnPickAddress.setOnClickListener(v -> {
+                Intent intent = new Intent(CheckoutActivity.this, AddressListActivity.class);
+                intent.putExtra("mode", "select");
+                startActivityForResult(intent, 2001);
+            });
+        }
+
         placeOrderBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -320,6 +329,13 @@ public class CheckoutActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<DocumentReference> task) {
                         if (task.isSuccessful()) {
+                            String docId = task.getResult() != null ? task.getResult().getId() : "";
+                            String orderDisplayId = docId.length() > 8 ? docId.substring(0, 8) : docId;
+                            com.imeshperera.ecomapp.utils.NotificationHelper.showNotification(
+                                    CheckoutActivity.this,
+                                    "Order Placed Successfully! 🎉",
+                                    "Your order #" + orderDisplayId + " has been placed and is currently Pending."
+                            );
                             Toast.makeText(CheckoutActivity.this, "Order Placed Successfully!", Toast.LENGTH_LONG).show();
                             clearCartAndFinish();
                         } else {
