@@ -23,7 +23,6 @@ The application provides a complete customer shopping experience including authe
 - [Firebase Cloud Messaging](#firebase-cloud-messaging)
 - [Firebase Storage](#firebase-storage)
 - [Running the Application](#running-the-application)
-- [Git Development Workflow](#git-development-workflow)
 - [Troubleshooting](#troubleshooting)
 - [Security Notes](#security-notes)
 - [Project Status](#project-status)
