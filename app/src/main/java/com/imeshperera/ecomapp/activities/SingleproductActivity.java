@@ -63,6 +63,59 @@ public class SingleproductActivity extends AppCompatActivity {
         qtyCountTv = findViewById(R.id.qty_count_tv);
         outOfStockBadge = findViewById(R.id.out_of_stock_badge);
 
+        View backBtn = findViewById(R.id.btn_back_main);
+        if (backBtn != null) {
+            backBtn.setOnClickListener(v -> finish());
+        }
+
+        ImageView heartBtn = findViewById(R.id.btn_single_wishlist);
+        if (heartBtn != null && newProductModel != null) {
+            FirebaseAuth auth = FirebaseAuth.getInstance();
+            if (auth.getCurrentUser() != null) {
+                String uid = auth.getCurrentUser().getUid();
+                String docId = newProductModel.getName() != null ? newProductModel.getName().replaceAll("\\s+", "_") : "item";
+
+                // Check wishlist status
+                firestore.collection("wishlist").document(uid).collection("items").document(docId)
+                        .get()
+                        .addOnSuccessListener(doc -> {
+                            if (doc.exists()) {
+                                heartBtn.setImageResource(R.drawable.heart_orange_fill);
+                            }
+                        });
+
+                heartBtn.setOnClickListener(v -> {
+                    firestore.collection("wishlist").document(uid).collection("items").document(docId)
+                            .get()
+                            .addOnSuccessListener(doc -> {
+                                if (doc.exists()) {
+                                    firestore.collection("wishlist").document(uid).collection("items").document(docId).delete()
+                                            .addOnSuccessListener(aVoid -> {
+                                                heartBtn.setImageResource(R.drawable.heart);
+                                                Toast.makeText(this, "Removed from wishlist", Toast.LENGTH_SHORT).show();
+                                            });
+                                } else {
+                                    HashMap<String, Object> data = new HashMap<>();
+                                    data.put("img_url", newProductModel.getImg_url());
+                                    data.put("name", newProductModel.getName());
+                                    data.put("brand", newProductModel.getBrand());
+                                    data.put("detail", newProductModel.getDetail());
+                                    data.put("price", newProductModel.getPrice());
+                                    data.put("rate", newProductModel.getRate());
+                                    data.put("type", newProductModel.getType());
+                                    data.put("stock", newProductModel.getStock());
+
+                                    firestore.collection("wishlist").document(uid).collection("items").document(docId).set(data)
+                                            .addOnSuccessListener(aVoid -> {
+                                                heartBtn.setImageResource(R.drawable.heart_orange_fill);
+                                                Toast.makeText(this, "Added to wishlist!", Toast.LENGTH_SHORT).show();
+                                            });
+                                }
+                            });
+                });
+            }
+        }
+
         if (newProductModel != null) {
             Glide.with(getApplicationContext()).load(newProductModel.getImg_url()).into(prodImage);
             prodName.setText(newProductModel.getName());

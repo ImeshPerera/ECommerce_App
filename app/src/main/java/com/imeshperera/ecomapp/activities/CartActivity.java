@@ -124,6 +124,17 @@ public class CartActivity extends AppCompatActivity {
         
         double grandTotal = subtotal + shippingFee;
         
+        View emptyState = findViewById(R.id.empty_cart_state);
+        if (emptyState != null) {
+            if (list.isEmpty()) {
+                emptyState.setVisibility(View.VISIBLE);
+                recyclerView.setVisibility(View.GONE);
+            } else {
+                emptyState.setVisibility(View.GONE);
+                recyclerView.setVisibility(View.VISIBLE);
+            }
+        }
+        
         if (subtotalTv != null) subtotalTv.setText("Rs. " + String.format("%,.2f", subtotal));
         
         if (shippingTv != null) {

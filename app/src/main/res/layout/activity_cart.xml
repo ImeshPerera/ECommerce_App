@@ -23,6 +23,15 @@
         android:layout_above="@id/over_all_layout"
         android:layout_below="@id/my_cart_toolbar" />
 
+    <include
+        android:id="@+id/empty_cart_state"
+        layout="@layout/layout_empty_state"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/over_all_layout"
+        android:layout_below="@id/my_cart_toolbar"
+        android:visibility="gone" />
+
     <LinearLayout
         android:id="@+id/over_all_layout"
         android:layout_width="match_parent"
