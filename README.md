@@ -1,14 +1,14 @@
 # ECommerce App
 
-A native Android e-commerce application developed with **Java and XML** using Android Studio. The application provides a complete customer shopping flow including authentication, product browsing, categories, cart management, wishlist, checkout, address management, order history, order details, notifications, and invoice generation.
+A native Android e-commerce application developed using **Java, XML, Android Studio, and Firebase**.
 
-The project uses **Firebase** as the cloud backend and integrates services such as **Cloud Firestore, Firebase Authentication, Firebase Cloud Messaging, Firebase Storage, and Google Sign-In**.
+The application provides a complete customer shopping experience including authentication, product browsing, categories, cart management, wishlist, checkout, address management, orders, notifications, related products, and invoice generation.
 
 ---
 
 ## Table of Contents
 
-- [Project Overview](#project-overview)
+- [Overview](#overview)
 - [Features](#features)
 - [Technology Stack](#technology-stack)
 - [Application Package](#application-package)
@@ -16,22 +16,14 @@ The project uses **Firebase** as the cloud backend and integrates services such 
 - [Requirements](#requirements)
 - [Getting Started](#getting-started)
 - [Firebase Configuration](#firebase-configuration)
-  - [Create a Firebase Project](#1-create-a-firebase-project)
-  - [Register the Android App](#2-register-the-android-app)
-  - [Configure google-servicesjson](#3-configure-google-servicesjson)
-  - [Enable Firebase Authentication](#4-enable-firebase-authentication)
-  - [Configure Google Sign-In](#5-configure-google-sign-in)
-  - [Create Cloud Firestore](#6-create-cloud-firestore)
-  - [Firestore Collections](#7-firestore-collections)
-  - [Firestore Security Rules](#8-firestore-security-rules)
-  - [Firestore Indexes](#9-firestore-indexes)
-  - [Import Existing Firestore Data](#10-import-existing-firestore-data)
-  - [Firebase Cloud Messaging](#11-firebase-cloud-messaging)
-  - [Firebase Storage](#12-firebase-storage)
-- [Firestore Backup / Export](#firestore-backup--export)
+- [Cloud Firestore Setup](#cloud-firestore-setup)
+- [Firestore Seed Data](#firestore-seed-data)
+- [Firestore Collections Created Automatically](#firestore-collections-created-automatically)
+- [Google Sign-In Configuration](#google-sign-in-configuration)
+- [Firebase Cloud Messaging](#firebase-cloud-messaging)
+- [Firebase Storage](#firebase-storage)
 - [Running the Application](#running-the-application)
-- [Development Workflow](#development-workflow)
-- [Git Branching Strategy](#git-branching-strategy)
+- [Git Development Workflow](#git-development-workflow)
 - [Troubleshooting](#troubleshooting)
 - [Security Notes](#security-notes)
 - [Project Status](#project-status)
@@ -39,46 +31,13 @@ The project uses **Firebase** as the cloud backend and integrates services such 
 
 ---
 
-# Project Overview
+# Overview
 
-The ECommerce App is a customer-facing Android shopping application designed to demonstrate a complete modern mobile e-commerce workflow.
+The ECommerce App is a customer-facing Android shopping application.
 
-The application connects an Android client to Firebase services for authentication, cloud database operations, media storage, and push notifications.
+The application uses Firebase as its cloud backend and Cloud Firestore as its primary application database.
 
-### Main application flow
-
-```text
-User
- │
- ├── Register / Login
- │       │
- │       └── Firebase Authentication
- │
- ├── Browse Products
- │       ├── Categories
- │       ├── Search / Filtering
- │       └── Related Products
- │
- ├── Product Details
- │       ├── Add to Cart
- │       └── Add to Wishlist
- │
- ├── Cart
- │       │
- │       └── Checkout
- │              ├── Address
- │              ├── Order
- │              └── Invoice
- │
- ├── Orders
- │       ├── Order History
- │       ├── Order Details
- │       └── Tracking / Status
- │
- └── Notifications
-         │
-         └── Firebase Cloud Messaging
-```
+The project is organized so that another developer can clone the repository, create their own Firebase project, configure the Android application, create a Firestore database, add the initial catalog seed data, and run the application.
 
 ---
 
@@ -88,44 +47,45 @@ User
 
 - Email/password registration
 - Email/password login
-- Forgot password functionality
+- Forgot password
 - Google Sign-In
 - Firebase Authentication integration
-- User profile information
+- User profile management
 
-## Product Management
+## Product Features
 
 - Product listing
 - Product categories
 - New products
+- Popular products
 - Product details
 - Related products
 - Product images
-- Product quantity / stock handling
+- Stock management
 - Product filtering
 
-## Shopping Cart
+## Cart
 
 - Add products to cart
-- Update quantities
+- Change product quantities
 - Remove products
 - Stock-aware quantity handling
 - Cart total calculation
-- Checkout flow
+- Checkout
 
 ## Wishlist
 
 - Add products to wishlist
 - Remove products from wishlist
-- Wishlist product listing
-- Wishlist synchronization with Firebase
+- Wishlist listing
+- Firebase synchronization
 
 ## Address Management
 
-- Add delivery address
+- Add address
 - Edit address
 - Delete address
-- Select address during checkout
+- Select checkout address
 - Store customer addresses in Firestore
 
 ## Orders
@@ -135,24 +95,15 @@ User
 - Order details
 - Order item details
 - Order status
-- Order tracking information
+- Order tracking
 - Invoice generation
 
 ## Notifications
 
 - Firebase Cloud Messaging
 - Push notification handling
+- Notification service
 - Notification helper
-- Notification service integration
-
-## Additional Features
-
-- Related product recommendations
-- Profile management
-- Bottom navigation
-- Loading / UI feedback
-- Invoice generation
-- Firebase cloud data synchronization
 
 ---
 
@@ -161,36 +112,33 @@ User
 | Technology | Purpose |
 |---|---|
 | Java | Android application development |
-| XML | Android UI layouts |
+| XML | Android UI |
 | Android Studio | Development IDE |
-| Gradle | Build and dependency management |
-| Firebase Authentication | User authentication |
+| Gradle | Build system |
+| Firebase Authentication | Authentication |
 | Cloud Firestore | Cloud database |
 | Firebase Cloud Messaging | Push notifications |
-| Firebase Storage | Media/file storage |
-| Google Sign-In | Google authentication |
-| Gson | JSON/data parsing |
+| Firebase Storage | Image/file storage |
+| Google Sign-In | Authentication |
+| Gson | Data parsing |
 | Glide | Image loading |
 | PayHere | Payment integration |
-| Material Components | Android UI components |
 
 ---
 
 # Application Package
 
-The Android application package/application ID is:
+The Android application ID is:
 
 ```text
 com.imeshperera.ecomapp
 ```
 
-This package name must be used when registering the Android application inside Firebase.
+This exact package name should be used when registering the Android application in Firebase.
 
 ---
 
 # Project Structure
-
-The project follows a conventional Android application structure:
 
 ```text
 ECommerceApp/
@@ -219,7 +167,9 @@ ECommerceApp/
 │   ├── build.gradle
 │   └── google-services.json
 │
-├── gradle/
+├── firebase/
+│   └── firestore_seed.json
+│
 ├── build.gradle
 ├── settings.gradle
 ├── gradle.properties
@@ -232,15 +182,18 @@ ECommerceApp/
 
 # Requirements
 
-Before running the project, install:
+Before running the application, install:
 
 - Android Studio
 - Android SDK
-- JDK version compatible with the project's Gradle/Android Gradle Plugin configuration
+- A compatible JDK for the project's Gradle/Android Gradle Plugin version
 - Git
 - A Firebase account
 
-For Firebase CLI operations, Node.js and npm are also required.
+For optional automated Firestore seeding using the Firebase Admin SDK:
+
+- Node.js
+- npm
 
 ---
 
@@ -252,7 +205,7 @@ For Firebase CLI operations, Node.js and npm are also required.
 git clone https://github.com/ImeshPerera/ECommerce_App.git
 ```
 
-Move into the project:
+Enter the project:
 
 ```bash
 cd ECommerce_App
@@ -260,49 +213,27 @@ cd ECommerce_App
 
 Open the project in Android Studio.
 
----
-
-## 2. Allow Gradle to Sync
-
-Open the project and allow Android Studio to:
-
-- Download Gradle dependencies
-- Sync the project
-- Index the source code
-- Download required Android SDK components
-
-Resolve any SDK or JDK requirement reported by Android Studio before continuing.
+Allow Android Studio to complete Gradle synchronization before running the application.
 
 ---
 
 # Firebase Configuration
 
-Firebase configuration is required before the application can fully communicate with the backend.
+The application uses Firebase for:
 
-The original development Firebase project used:
+- Firebase Authentication
+- Cloud Firestore
+- Firebase Cloud Messaging
+- Firebase Storage
+- Google Sign-In
 
-```text
-Firebase Project ID:
-ecommerce-app-44f11
-
-Firestore Database:
-(default)
-
-Firestore Mode:
-Firestore Native
-
-Firestore Location:
-nam5
-
-Edition:
-Standard
-```
-
-A developer cloning this repository should normally create and use **their own Firebase project**.
+A developer should normally create and use their own Firebase project rather than using another developer's Firebase credentials.
 
 ---
 
-# 1. Create a Firebase Project
+# Cloud Firestore Setup
+
+## 1. Create a Firebase Project
 
 Open:
 
@@ -310,18 +241,17 @@ https://console.firebase.google.com/
 
 Create a new Firebase project.
 
-Example:
+For example:
 
 ```text
-Project name:
-ECommerce App - Development
+ECommerce_App
 ```
 
-The Firebase project ID can be different from the original project.
+The Firebase project ID does not need to match the original project.
 
 ---
 
-# 2. Register the Android App
+## 2. Register the Android Application
 
 Inside Firebase:
 
@@ -340,33 +270,23 @@ Android
 Use:
 
 ```text
-Android package name:
+Package name:
 com.imeshperera.ecomapp
 ```
 
-If Firebase asks for a SHA-1 certificate, add the SHA-1 certificate belonging to the Android environment being used.
+If Firebase requests SHA certificates, add the SHA-1/SHA-256 certificates for the Android signing environment being used.
 
-### Why SHA-1 matters
-
-Google Sign-In requires the Android application's signing certificate to be registered correctly.
-
-For local debug builds, you can obtain the debug SHA-1 using Android Studio's Gradle tasks or:
-
-```bash
-./gradlew signingReport
-```
-
-On Windows:
+For local development, signing information can be obtained with:
 
 ```powershell
 .\gradlew signingReport
 ```
 
-Look for the `SHA1` value under the debug variant.
+Look for the `SHA1` and `SHA-256` values under the appropriate build variant.
 
 ---
 
-# 3. Configure `google-services.json`
+## 3. Download `google-services.json`
 
 After registering the Android application, Firebase provides:
 
@@ -374,110 +294,35 @@ After registering the Android application, Firebase provides:
 google-services.json
 ```
 
-Download the file and place it here:
+Place it in:
 
 ```text
 app/google-services.json
 ```
 
-The repository may contain a placeholder configuration. Replace it with the configuration generated by **your own Firebase project**.
+If the repository contains a placeholder configuration, replace it with the configuration generated for your own Firebase project.
 
-The file must correspond to:
+The configuration must belong to:
 
 ```text
 com.imeshperera.ecomapp
 ```
 
-### Important
-
-Do not take a `google-services.json` file from another developer's Firebase project and expect it to connect to your own Firebase project.
-
-Each Firebase project generates its own Android configuration.
-
 ---
 
-# 4. Enable Firebase Authentication
+# Firestore Database
 
-Open:
-
-```text
-Firebase Console
-    ↓
-Build
-    ↓
-Authentication
-```
-
-Enable the authentication providers required by the application.
-
-At minimum, configure:
+In Firebase Console:
 
 ```text
-Email/Password
-```
-
-For Google Sign-In, also configure:
-
-```text
-Google
-```
-
-Make sure the Android application SHA-1/SHA-256 certificates are correctly registered when required.
-
----
-
-# 5. Configure Google Sign-In
-
-Google Sign-In depends on both Firebase Authentication and the Android application configuration.
-
-Verify:
-
-```text
-Firebase Project
-    ↓
-Project Settings
-    ↓
-Your Android App
-```
-
-Confirm:
-
-- Package name is correct
-- SHA-1 is registered
-- SHA-256 is registered where required
-- Google authentication provider is enabled
-
-After changing Firebase configuration, download a fresh:
-
-```text
-google-services.json
-```
-
-and replace:
-
-```text
-app/google-services.json
-```
-
-Then rebuild the application.
-
----
-
-# 6. Create Cloud Firestore
-
-Open:
-
-```text
-Firebase Console
-    ↓
 Build
     ↓
 Firestore Database
+    ↓
+Create database
 ```
 
-Create a database.
-
-Use:
+Create:
 
 ```text
 Database ID:
@@ -490,319 +335,431 @@ Select:
 Firestore Native
 ```
 
-The original project uses:
+The original development project used:
 
 ```text
-Location:
-nam5
+Database ID: (default)
+Mode: Firestore Native
+Edition: Standard
+Location: nam5
 ```
 
-For a new project, select an appropriate location for your environment. Firestore database locations cannot simply be changed after database creation, so choose carefully.
+For a new Firebase project, choose an appropriate Firestore location for your project.
 
 ---
 
-# 7. Firestore Collections
+# Firestore Seed Data
 
-The current development database contains the following collection groups:
+The repository contains a simple seed file:
 
 ```text
-AddToCart
+firestore_seed.json
+```
+
+The purpose of this file is to provide the **initial catalog data** required by the Android application.
+
+You do not need to recreate the entire Firestore database manually.
+
+Only these two collections require initial data:
+
+```text
 Category
 New Products
-PlacedOrders
-users
-wishlist
 ```
 
-The database structure may evolve during future development.
+The other user-related collections are created automatically by the application when users perform the relevant actions.
 
-### Example logical structure
+---
+
+# Seed File Overview
+
+The seed file contains data formatted specifically to match the Android application's Firestore collection names and model classes.
+
+---
+
+## 1. Category Collection
+
+Collection name:
 
 ```text
-users
- └── user document
-      ├── profile information
-      └── account information
-
 Category
- └── category documents
+```
 
+The initial categories are:
+
+- Shoes
+- Clothing
+- Watches
+- Bags
+- Electronics
+
+Fields:
+
+```text
+name
+type
+img_url
+```
+
+Example:
+
+```json
+{
+  "name": "Shoes",
+  "type": "shoes",
+  "img_url": "https://..."
+}
+```
+
+---
+
+## 2. New Products Collection
+
+Collection name:
+
+```text
 New Products
- └── product documents
-
-AddToCart
- └── cart documents
-
-wishlist
- └── wishlist documents
-
-PlacedOrders
- └── order documents
 ```
 
-Always refer to the current application models and Firestore access code as the source of truth for the latest field structure.
+Products are assigned using:
+
+```text
+cat: "new"
+```
+
+or:
+
+```text
+cat: "popular"
+```
+
+This matches the product queries used by the application.
+
+Fields:
+
+```text
+name
+brand
+type
+cat
+price
+rate
+stock
+img_url
+detail
+```
+
+Example:
+
+```json
+{
+  "name": "Nike Air Max 270",
+  "brand": "Nike",
+  "type": "shoes",
+  "cat": "new",
+  "price": "150",
+  "rate": "4.8",
+  "stock": 25,
+  "img_url": "https://...",
+  "detail": "Sample product description"
+}
+```
+
+The complete seed data is available in:
+
+```text
+firestore_seed.json
+```
 
 ---
 
-# 8. Firestore Security Rules
+# How to Add the Seed Data
 
-Firestore Security Rules control access to database documents.
+The seed file is included in the repository so developers can use it as the source for the initial Firestore catalog.
 
-For a production-ready project, rules should be maintained as source-controlled configuration.
-
-Recommended file:
+The only initial collections that need to be populated are:
 
 ```text
-firestore.rules
+Category
+New Products
 ```
 
-Example Firebase CLI deployment:
+You can use either of the following methods.
 
-```bash
-firebase deploy --only firestore:rules
-```
+## Method 1 - Firebase Console
 
-### Important
-
-Do not use unrestricted rules such as:
+Open:
 
 ```text
-allow read, write: if true;
+Firebase Console
+    ↓
+Firestore Database
+    ↓
+Data
 ```
-
-for a production application.
-
-Rules should be based on authentication and the application's authorization requirements.
-
-If the repository does not yet contain a finalized `firestore.rules`, configure the rules in Firebase Console and export/maintain them as part of the project's backend configuration before production deployment.
-
----
-
-# 9. Firestore Indexes
-
-If Firestore queries require composite indexes, maintain them in:
-
-```text
-firestore.indexes.json
-```
-
-Deploy indexes using:
-
-```bash
-firebase deploy --only firestore:indexes
-```
-
-Firestore index configuration is separate from the database data export.
-
----
-
-# 10. Import Existing Firestore Data
-
-A development Firestore export was created from the original project.
-
-## Export information
-
-```text
-Date:
-2026-08-11
-
-Database:
-(default)
-
-Collection groups:
-All Collections
-
-Documents:
-24
-
-Size:
-14.68 KB
-```
-
-The export was stored in Google Cloud Storage under:
-
-```text
-ecommerce-app-44f11.appspot.com/
-2026-08-11T11:44:34_33519/
-```
-
-### Important
-
-The Firestore export is **not stored in this Git repository**.
-
-It is maintained separately in Google Cloud Storage.
-
-The export may contain application/user/order data and should therefore only be shared with authorized developers.
-
----
-
-## Importing the Existing Database
-
-If you have authorized access to the Firestore export, create your destination Firebase project first.
-
-### Step 1 — Create Firebase Project
-
-Create a Firebase project from:
-
-https://console.firebase.google.com/
-
-### Step 2 — Create Firestore
 
 Create:
 
 ```text
-Database ID:
-(default)
+Category
 ```
 
-using Firestore Native mode.
-
-### Step 3 — Ensure Required Billing/Permissions
-
-Managed Firestore import/export requires the appropriate Google Cloud billing and IAM permissions.
-
-The destination project must be able to access the Cloud Storage location containing the export.
-
-### Step 4 — Open Import/Export
-
-In Google Cloud Console:
+and add the category documents/fields from:
 
 ```text
-Firestore
-    ↓
-Databases
-    ↓
-(default)
-    ↓
-Import/Export
+firestore_seed.json
 ```
 
-Select:
+Then create:
 
 ```text
-Import
+New Products
 ```
 
-### Step 5 — Select the Export Metadata
+and add the product documents/fields from the same seed file.
 
-Select the Firestore export's:
+This is the simplest method for a small development dataset.
 
-```text
-.overall_export_metadata
+## Method 2 - Firebase Admin SDK
+
+For automated setup, the seed JSON can be loaded by a Node.js script using the Firebase Admin SDK.
+
+The basic Firestore operation is:
+
+```javascript
+firestore
+    .collection("Category")
+    .doc("cat_shoes")
+    .set({
+        name: "Shoes",
+        type: "shoes",
+        img_url: "https://..."
+    });
 ```
 
-file.
+For products:
 
-Start the import job.
+```javascript
+firestore
+    .collection("New Products")
+    .doc("prod_1")
+    .set({
+        name: "Nike Air Max 270",
+        brand: "Nike",
+        type: "shoes",
+        cat: "new",
+        price: "150",
+        rate: "4.8",
+        stock: 25,
+        img_url: "https://...",
+        detail: "Sample product description"
+    });
+```
 
-Firestore will recreate the exported documents and collections in the destination database.
+A complete automated seed script can be added to the repository later if required.
 
 ---
 
-## Important Firestore Import Notes
+# Firestore Collections Created Automatically
 
-The Firestore export is not a traditional SQL dump.
+You do **not** need to manually create every Firestore collection.
 
-It is a Google-managed Firestore export stored in Cloud Storage.
+The application creates and updates user-related data automatically when the relevant feature is used.
 
-Conceptually:
+| Firestore Collection / Path | Seed Required? | Created / Updated By |
+|---|---|---|
+| `Category` | Yes | Initial seed data |
+| `New Products` | Yes | Initial seed data |
+| `users` | No | User registration / profile update |
+| `users/{uid}/addresses` | No | Add/Edit Address |
+| `AddToCart/{uid}/User` | No | Add to Cart |
+| `wishlist/{uid}/items` | No | Wishlist |
+| `PlacedOrders` | No | Checkout / order placement |
 
-```text
-MySQL
-    ↓
-database.sql
-```
-
-whereas Firestore uses:
-
-```text
-Firestore
-    ↓
-Google Cloud Storage
-    ↓
-Firestore export files
-```
-
-The export contains Firestore data, but it does not automatically transfer the entire Firebase project configuration.
-
-It does not replace:
-
-- `google-services.json`
-- Firebase Authentication configuration
-- Google Sign-In configuration
-- Firestore Security Rules
-- Firestore index definitions
-- Firebase Storage configuration
-- Firebase Cloud Messaging configuration
-- Google Cloud service-account credentials
+Firestore creates the collection/document path when the application performs its first write.
 
 ---
 
-# Firestore Backup / Export
-
-For development and disaster recovery, Firestore data can be exported through:
+# Runtime Firestore Flow
 
 ```text
-Google Cloud Console
-    ↓
-Firestore
-    ↓
-(default)
-    ↓
-Import/Export
-    ↓
-Export
+Application starts
+       │
+       ├── Category
+       │      └── Initial seed data
+       │
+       └── New Products
+              └── Initial seed data
+
+                     ↓
+
+              User interacts
+                     │
+        ┌────────────┼────────────┐
+        │            │            │
+     Register    Add Address   Add to Cart
+        │            │            │
+        ▼            ▼            ▼
+      users       addresses     AddToCart
+        │
+        ├─────────────────┐
+        │                 │
+     Wishlist          Checkout
+        │                 │
+        ▼                 ▼
+    wishlist          PlacedOrders
 ```
-
-Recommended export:
-
-```text
-Export entire database
-Export current state of database
-```
-
-Select a Google Cloud Storage bucket as the destination.
-
-The project currently has a development export containing:
-
-```text
-24 documents
-14.68 KB
-```
-
-Regular exports are recommended before major database changes.
 
 ---
 
-# 11. Firebase Cloud Messaging
+# How Runtime Collections Are Created
 
-The application includes Firebase Cloud Messaging integration for push notifications.
+## User Registration
 
-The project contains a Firebase messaging service:
+When a user registers, the application creates or updates:
+
+```text
+users/{uid}
+```
+
+The user document contains the profile/account information required by the application.
+
+---
+
+## Add Address
+
+When a user saves a delivery address:
+
+```text
+users/{uid}/addresses/{addressId}
+```
+
+is created.
+
+---
+
+## Add to Cart
+
+When a user adds a product to the shopping cart:
+
+```text
+AddToCart/{uid}/User
+```
+
+is created or updated.
+
+---
+
+## Wishlist
+
+When a user taps the heart/favorite button:
+
+```text
+wishlist/{uid}/items
+```
+
+is created or updated.
+
+---
+
+## Place Order
+
+When a user completes checkout:
+
+```text
+PlacedOrders/{orderId}
+```
+
+is created.
+
+---
+
+# Firebase Authentication
+
+Enable Firebase Authentication if you want to test registration and login.
+
+In Firebase Console:
+
+```text
+Build
+    ↓
+Authentication
+    ↓
+Sign-in method
+```
+
+Enable:
+
+```text
+Email/Password
+```
+
+For Google Sign-In, also enable:
+
+```text
+Google
+```
+
+---
+
+# Google Sign-In Configuration
+
+Google Sign-In requires the Android application to be correctly registered in Firebase.
+
+Verify:
+
+```text
+Package:
+com.imeshperera.ecomapp
+```
+
+Also configure the appropriate SHA-1/SHA-256 certificates.
+
+For local development:
+
+```powershell
+.\gradlew signingReport
+```
+
+After changing Firebase Android configuration, download a fresh:
+
+```text
+google-services.json
+```
+
+and replace:
+
+```text
+app/google-services.json
+```
+
+Then synchronize and rebuild the Android project.
+
+---
+
+# Firebase Cloud Messaging
+
+The project includes Firebase Cloud Messaging support for push notifications.
+
+The application contains:
 
 ```text
 app/src/main/java/com/imeshperera/ecomapp/services/MyFirebaseMessagingService.java
 ```
 
-and notification handling utilities.
-
-For a new Firebase project:
+To use FCM with your own Firebase project:
 
 1. Configure the Android application.
-2. Add the correct `google-services.json`.
-3. Ensure Firebase Cloud Messaging is enabled.
-4. Build and run the application.
-5. Test notification delivery on a real Android device.
-
-Some notification functionality may require additional backend/server-side logic depending on how notifications are triggered.
+2. Add your own `google-services.json`.
+3. Enable Firebase Cloud Messaging.
+4. Build and run the application on a real Android device.
+5. Test notification delivery.
 
 ---
 
-# 12. Firebase Storage
+# Firebase Storage
 
-Firebase Storage is used for cloud-hosted application media where applicable.
-
-Enable it through:
+Firebase Storage can be enabled from:
 
 ```text
 Firebase Console
@@ -812,7 +769,24 @@ Build
 Storage
 ```
 
-Configure appropriate Storage Security Rules.
+The application uses image URLs for product images.
+
+When using your own Firebase project, configure Storage and its security rules according to the application's requirements.
+
+you can add your own images to related storage and update seed links matching accordingly 
+
+---
+
+# Firestore Security Rules
+
+Firestore Security Rules control access to database data.
+
+Before using the application in production, configure rules based on:
+
+- Authentication state
+- User UID
+- Collection access
+- Application authorization requirements
 
 Do not use unrestricted production rules such as:
 
@@ -820,214 +794,88 @@ Do not use unrestricted production rules such as:
 allow read, write: if true;
 ```
 
-unless this is intentionally a temporary development environment.
+The rules should be tested before deployment.
+
+If `firestore.rules` is added to the repository later, it should be treated as the source-controlled version of the Firestore rules.
 
 ---
 
-# Firebase CLI Setup
+# Firestore Indexes
 
-Install the Firebase CLI:
+If Firestore reports that a query requires an index, create the required index through Firebase Console.
 
-```bash
-npm install -g firebase-tools
-```
-
-Login:
-
-```bash
-firebase login
-```
-
-Verify:
-
-```bash
-firebase projects:list
-```
-
-Initialize Firebase configuration when required:
-
-```bash
-firebase init
-```
-
-Select the services required by the project.
-
-Associate the local directory with a Firebase project:
-
-```bash
-firebase use --add
-```
-
-Then select the Firebase project created for development.
-
----
-
-# Recommended Firebase Repository Files
-
-For a maintainable project, Firebase backend configuration can be maintained alongside the Android source:
+For a source-controlled setup, maintain:
 
 ```text
-ECommerceApp/
-│
-├── app/
-│   └── google-services.json
-│
-├── firebase.json
-├── .firebaserc
-├── firestore.rules
-├── firestore.indexes.json
-└── README.md
+firestore.indexes.json
 ```
 
-The database export itself should normally remain outside the Git repository when it contains real user or transactional data.
+and deploy using the Firebase CLI when appropriate:
+
+```bash
+firebase deploy--only firestore:indexes
+```
 
 ---
 
 # Running the Application
 
-After Firebase configuration:
+After completing the Firebase setup:
 
 1. Open the project in Android Studio.
 2. Confirm the correct JDK is configured.
-3. Allow Gradle synchronization to complete.
-4. Confirm `app/google-services.json` belongs to the Firebase project.
-5. Verify Firebase Authentication configuration.
-6. Verify Firestore configuration.
-7. Verify Google Sign-In configuration.
-8. Connect an Android device or start an emulator.
-9. Build and run the application.
+3. Synchronize Gradle.
+4. Configure `app/google-services.json`.
+5. Create the Firestore `(default)` database.
+6. Add the `Category` seed data.
+7. Add the `New Products` seed data.
+8. Enable Firebase Authentication.
+9. Configure Google Sign-In if required.
+10. Configure FCM if notifications are required.
+11. Connect an Android device or start an emulator.
+12. Run the application.
 
 ---
 
-# Build from Command Line
+# First-Time Setup Summary
 
-On Windows:
-
-```powershell
-.\gradlew assembleDebug
-```
-
-Install the debug APK to a connected device:
-
-```powershell
-.\gradlew installDebug
-```
-
-Run tests where available:
-
-```powershell
-.\gradlew test
-```
-
----
-
-# Development Workflow
-
-This project uses Git branches for phase-based development.
-
-The stable branch is:
+For a new developer:
 
 ```text
-main
-```
-
-Development is performed on phase branches:
-
-```text
-upgrade/phase1
-upgrade/phase2
-upgrade/phase3
-upgrade/phase4
-upgrade/phase5
-...
-```
-
-## Start a New Phase
-
-Always start from the latest `main`:
-
-```powershell
-git switch main
-git pull --ff-only origin main
-```
-
-Create the next phase:
-
-```powershell
-git switch -c upgrade/phase5
-```
-
-Push the new branch:
-
-```powershell
-git push -u origin upgrade/phase5
-```
-
----
-
-# Commit Workflow
-
-During a phase, make as many commits as required.
-
-Example:
-
-```powershell
-git status
-git add .
-git commit -m "phase 5: implement product search"
-git push
-```
-
-Then continue development:
-
-```powershell
-git add .
-git commit -m "phase 5: improve search filtering"
-git push
-```
-
-There is no requirement to have only one commit per phase.
-
----
-
-# Pull Request Workflow
-
-When a phase is complete:
-
-```text
-upgrade/phase5
+Clone Repository
        ↓
-Pull Request
+Create Firebase Project
        ↓
-main
+Register Android App
+       ↓
+Package:
+com.imeshperera.ecomapp
+       ↓
+Download google-services.json
+       ↓
+Place in:
+app/google-services.json
+       ↓
+Create Firestore
+Database: (default)
+       ↓
+Add Category Seed Data
+       ↓
+Add New Products Seed Data
+       ↓
+Enable Authentication
+       ↓
+Configure Google Sign-In
+       ↓
+Run Application
+       ↓
+Application automatically creates:
+Users
+Addresses
+Cart
+Wishlist
+Orders
 ```
-
-After the Pull Request is reviewed and merged:
-
-1. Delete the remote phase branch if appropriate.
-2. Return to local `main`.
-3. Pull the latest `main`.
-4. Create the next phase branch.
-
-Example:
-
-```powershell
-git switch main
-git pull --ff-only origin main
-git switch -c upgrade/phase6
-```
-
-### Branch rule
-
-```text
-main
-    = stable / integrated code
-
-upgrade/phaseX
-    = active development
-```
-
-Avoid developing directly on `main`.
 
 ---
 
@@ -1042,14 +890,16 @@ Check:
 - SHA-256 certificate where applicable
 - Google Sign-In provider
 - `google-services.json`
-- Firebase project ID
-- Rebuild after changing Firebase configuration
+- Firebase project
+- Android application ID
 
-For local development, obtain signing information with:
+Run:
 
 ```powershell
 .\gradlew signingReport
 ```
+
+and compare the SHA values with Firebase Console.
 
 ---
 
@@ -1061,7 +911,7 @@ Check:
 app/google-services.json
 ```
 
-Confirm that the package name matches:
+Confirm that it belongs to:
 
 ```text
 com.imeshperera.ecomapp
@@ -1080,89 +930,131 @@ and rebuild the application.
 
 ## Firestore Permission Denied
 
-A `PERMISSION_DENIED` error normally indicates a Firestore Security Rules or authentication problem.
-
 Check:
 
-1. User authentication state
-2. Firebase Authentication provider
-3. Firestore Security Rules
-4. User UID
-5. Collection/document path
-6. Firebase project selected by `google-services.json`
+- Firebase Authentication
+- Firestore Security Rules
+- Logged-in user UID
+- Collection name
+- Document path
+- Firebase project configured in `google-services.json`
 
-Do not solve permission problems by permanently changing production rules to unrestricted access.
-
----
-
-## Firestore Index Error
-
-If Firestore reports a missing index:
-
-1. Check the error message.
-2. Identify the required query/index.
-3. Create the index in Firebase Console or add it to `firestore.indexes.json`.
-4. Deploy the index if using Firebase CLI.
+Do not make Firestore completely public as a permanent solution.
 
 ---
 
-## Gradle / Android Studio Problems
+## Products Are Not Appearing
 
-Try:
-
-```text
-File
- → Sync Project with Gradle Files
-```
-
-If required, clean and rebuild:
+Check that the collection name is exactly:
 
 ```text
-Build
- → Clean Project
-Build
- → Rebuild Project
+New Products
 ```
 
-Avoid deleting project files or Gradle configuration unless the actual error requires it.
+Check that product documents contain:
+
+```text
+name
+brand
+type
+cat
+price
+rate
+stock
+img_url
+detail
+```
+
+Also verify that:
+
+```text
+cat
+```
+
+contains either:
+
+```text
+new
+```
+
+or:
+
+```text
+popular
+```
+
+---
+
+## Categories Are Not Appearing
+
+Check that the collection name is exactly:
+
+```text
+Category
+```
+
+and that documents contain:
+
+```text
+name
+type
+img_url
+```
 
 ---
 
 # Security Notes
 
+## Firebase Configuration
+
+Each developer should use their own Firebase project and their own:
+
+```text
+app/google-services.json
+```
+
+Do not commit private Firebase Admin SDK credentials.
+
+---
+
 ## Never Commit Private Credentials
 
-Do not commit:
+Do not commit files such as:
 
 ```text
 service-account.json
 firebase-adminsdk-*.json
-*.pem
-*.p12
 private API keys
 private signing keys
+keystores
+passwords
 ```
 
-to GitHub.
+to a public GitHub repository.
 
-Never upload Android signing keystores or passwords to a public repository.
+A Firebase Admin SDK service-account key provides privileged access and must remain private.
 
 ---
 
 ## Firestore Data
 
-The development Firestore export may contain sensitive application data such as:
+The seed file is intended for development/demo catalog data.
 
-- User accounts
-- User profile information
-- Orders
-- Addresses
-- Cart data
-- Wishlist data
+Do not place real customer information in:
 
-Do not publish a real production/development database export to a public Git repository.
+```text
+firebase/firestore_seed.json
+```
 
-Use sanitized sample data when a public demonstration dataset is required.
+Do not include:
+
+- Real customer names
+- Real phone numbers
+- Real addresses
+- Real FCM tokens
+- Real payment information
+- Production customer data
+- Private credentials
 
 ---
 
@@ -1170,31 +1062,34 @@ Use sanitized sample data when a public demonstration dataset is required.
 
 The project is being developed incrementally through phase-based Git branches.
 
-Current development branch:
+Current development phase:
 
 ```text
-upgrade/phase5
+Phase 5
 ```
 
 Completed phases include:
 
-```text
-Phase 1
+### Phase 1
+
 - Bottom navigation
 - User profile
 - Password reset
 
-Phase 2
+### Phase 2
+
 - Quantity / stock handling
 - Wishlist
 
-Phase 3
+### Phase 3
+
 - Shipping
 - Invoice
 - Order history
 - Order tracking
 
-Phase 4
+### Phase 4
+
 - Address management
 - Checkout improvements
 - Google Sign-In
@@ -1202,25 +1097,24 @@ Phase 4
 - Related products
 - Order details
 - Firebase integration improvements
-```
 
-Phase 5 is the current active development phase.
+### Phase 5
 
-Features may continue to change during development.
+Current active development phase.
+
+Features and database structures may continue to change during development.
 
 ---
 
-# Useful Firebase Resources
+# Firebase Resources
 
 - Firebase Console: https://console.firebase.google.com/
 - Firebase Android Setup: https://firebase.google.com/docs/android/setup
 - Firebase Authentication: https://firebase.google.com/docs/auth
 - Cloud Firestore: https://firebase.google.com/docs/firestore
-- Firestore Export/Import: https://firebase.google.com/docs/firestore/manage-data/export-import
-- Firestore Data Migration: https://firebase.google.com/docs/firestore/manage-data/move-data
 - Firebase Cloud Messaging: https://firebase.google.com/docs/cloud-messaging
 - Firebase Storage: https://firebase.google.com/docs/storage
-- Firebase CLI: https://firebase.google.com/docs/cli
+- Firebase Admin SDK: https://firebase.google.com/docs/admin/setup
 
 ---
 
@@ -1232,7 +1126,7 @@ GitHub:
 
 https://github.com/ImeshPerera
 
-Project repository:
+Project Repository:
 
 https://github.com/ImeshPerera/ECommerce_App
 
@@ -1240,6 +1134,6 @@ https://github.com/ImeshPerera/ECommerce_App
 
 # License
 
-This project is intended primarily as a software engineering / educational development project.
+This project is primarily intended as a software engineering and educational project.
 
-If you plan to redistribute, commercialize, or substantially reuse the project, review and add an appropriate open-source license to the repository.
+If you plan to redistribute, commercialize, or substantially reuse the project, add an appropriate license to the repository.
