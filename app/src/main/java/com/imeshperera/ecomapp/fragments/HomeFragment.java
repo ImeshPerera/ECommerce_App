@@ -130,9 +130,14 @@ public class HomeFragment extends Fragment implements FilterBottomSheetFragment.
         progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.show();
 
+        com.facebook.shimmer.ShimmerFrameLayout shimmerNewProducts = root.findViewById(R.id.shimmer_new_products);
+        com.facebook.shimmer.ShimmerFrameLayout shimmerPopularProducts = root.findViewById(R.id.shimmer_popular_products);
+
+        if (shimmerNewProducts != null) shimmerNewProducts.startShimmer();
+        if (shimmerPopularProducts != null) shimmerPopularProducts.startShimmer();
+
         db = FirebaseFirestore.getInstance();
         linearLayout = root.findViewById(R.id.home_layout);
-        linearLayout.setVisibility(View.GONE);
 
         catRecyclerview.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.HORIZONTAL, false));
         newProductRecyclerview.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.HORIZONTAL, false));
@@ -169,8 +174,15 @@ public class HomeFragment extends Fragment implements FilterBottomSheetFragment.
                                 NewProductModel allproductModel = document.toObject(NewProductModel.class);
                                 allProductModelList.add(allproductModel);
                                 originalAllProductList.add(allproductModel);
-                                allProductAdapter.notifyDataSetChanged();
-                                linearLayout.setVisibility(View.VISIBLE);
+                            }
+                            allProductAdapter.notifyDataSetChanged();
+
+                            if (shimmerPopularProducts != null) {
+                                shimmerPopularProducts.stopShimmer();
+                                shimmerPopularProducts.setVisibility(View.GONE);
+                            }
+                            allProductRecyclerview.setVisibility(View.VISIBLE);
+                            if (progressDialog != null && progressDialog.isShowing()) {
                                 progressDialog.dismiss();
                             }
 
@@ -193,8 +205,14 @@ public class HomeFragment extends Fragment implements FilterBottomSheetFragment.
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 NewProductModel productModel = document.toObject(NewProductModel.class);
                                 newProductModelList.add(productModel);
-                                newProductAdapter.notifyDataSetChanged();
                             }
+                            newProductAdapter.notifyDataSetChanged();
+
+                            if (shimmerNewProducts != null) {
+                                shimmerNewProducts.stopShimmer();
+                                shimmerNewProducts.setVisibility(View.GONE);
+                            }
+                            newProductRecyclerview.setVisibility(View.VISIBLE);
                         }
                     }
                 });
