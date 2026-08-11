@@ -144,6 +144,14 @@ public class RegistrationActivity extends AppCompatActivity {
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task2) {
+                                            // Save FCM token if available
+                                            com.google.firebase.messaging.FirebaseMessaging.getInstance().getToken()
+                                                    .addOnCompleteListener(tokenTask -> {
+                                                        if (tokenTask.isSuccessful() && tokenTask.getResult() != null) {
+                                                            firestore.collection("users").document(uid).update("fcmToken", tokenTask.getResult());
+                                                        }
+                                                    });
+
                                             progressDialog.dismiss();
                                             if (task2.isSuccessful()) {
                                                 Toast.makeText(RegistrationActivity.this, "Successfully Registered!", Toast.LENGTH_SHORT).show();

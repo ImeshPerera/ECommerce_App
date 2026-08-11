@@ -55,19 +55,27 @@ public class OrdersFragment extends Fragment {
                 .whereEqualTo("userId", uid)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    List<Map<String, Object>> orders = new ArrayList<>();
+                    List<com.imeshperera.ecomapp.models.OrderModel> orderList = new ArrayList<>();
                     for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                        Map<String, Object> order = doc.getData();
-                        order.put("orderId", doc.getId());
-                        orders.add(order);
+                        com.imeshperera.ecomapp.models.OrderModel order = doc.toObject(com.imeshperera.ecomapp.models.OrderModel.class);
+                        if (order != null) {
+                            order.setOrderId(doc.getId());
+                            orderList.add(order);
+                        }
                     }
-                    if (orders.isEmpty()) {
-                        emptyState.setVisibility(View.VISIBLE);
+                    if (orderList.isEmpty()) {
+                        if (emptyState != null) emptyState.setVisibility(View.VISIBLE);
                         recyclerView.setVisibility(View.GONE);
                     } else {
-                        emptyState.setVisibility(View.GONE);
+                        if (emptyState != null) emptyState.setVisibility(View.GONE);
                         recyclerView.setVisibility(View.VISIBLE);
-                        // Full adapter will be wired in Phase 3
+                        com.imeshperera.ecomapp.adapters.OrdersAdapter adapter = 
+                                new com.imeshperera.ecomapp.adapters.OrdersAdapter(getContext(), orderList, order -> {
+                                    android.content.Intent intent = new android.content.Intent(getActivity(), com.imeshperera.ecomapp.activities.OrderDetailActivity.class);
+                                    intent.putExtra("order", order);
+                                    startActivity(intent);
+                                });
+                        recyclerView.setAdapter(adapter);
                     }
                 });
     }

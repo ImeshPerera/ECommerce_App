@@ -151,6 +151,15 @@
                 android:padding="8dp">
 
                 <Button
+                    android:id="@+id/profile_address_btn"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:text="Saved Shipping Addresses"
+                    android:textColor="#3F51B5"
+                    android:backgroundTint="#E8EAF6"
+                    android:layout_marginBottom="8dp" />
+
+                <Button
                     android:id="@+id/profile_cart_btn"
                     android:layout_width="match_parent"
                     android:layout_height="52dp"
