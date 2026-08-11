@@ -61,6 +61,13 @@ public class ProfileFragment extends Fragment {
             startActivity(intent);
         });
 
+        Button addressBtn = root.findViewById(R.id.profile_address_btn);
+        if (addressBtn != null) {
+            addressBtn.setOnClickListener(v -> {
+                startActivity(new Intent(getActivity(), com.imeshperera.ecomapp.activities.AddressListActivity.class));
+            });
+        }
+
         cartBtn.setOnClickListener(v -> {
             startActivity(new Intent(getActivity(), CartActivity.class));
         });

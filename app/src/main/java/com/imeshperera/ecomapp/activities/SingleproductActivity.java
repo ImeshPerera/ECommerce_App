@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 
 public class SingleproductActivity extends AppCompatActivity {
 
@@ -99,6 +100,33 @@ public class SingleproductActivity extends AppCompatActivity {
                 Toast.makeText(this, "Only " + maxStock + " items available", Toast.LENGTH_SHORT).show();
             }
         });
+
+        // Load related products
+        if (newProductModel != null && newProductModel.getType() != null) {
+            androidx.recyclerview.widget.RecyclerView relatedRec = findViewById(R.id.related_products_rec);
+            if (relatedRec != null) {
+                List<NewProductModel> relatedList = new ArrayList<>();
+                com.imeshperera.ecomapp.adapters.NewProductAdapter relatedAdapter = 
+                        new com.imeshperera.ecomapp.adapters.NewProductAdapter(this, relatedList);
+                relatedRec.setAdapter(relatedAdapter);
+
+                firestore.collection("New Products")
+                        .whereEqualTo("type", newProductModel.getType())
+                        .limit(10)
+                        .get()
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful() && task.getResult() != null) {
+                                for (com.google.firebase.firestore.DocumentSnapshot doc : task.getResult()) {
+                                    NewProductModel item = doc.toObject(NewProductModel.class);
+                                    if (item != null && !item.getName().equalsIgnoreCase(newProductModel.getName())) {
+                                        relatedList.add(item);
+                                    }
+                                }
+                                relatedAdapter.notifyDataSetChanged();
+                            }
+                        });
+            }
+        }
     }
 
     public void buynow(View view) {

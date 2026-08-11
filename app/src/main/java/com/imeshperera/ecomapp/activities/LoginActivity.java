@@ -71,7 +71,15 @@ public class LoginActivity extends AppCompatActivity {
                 if (account != null && account.getIdToken() != null) {
                     com.google.firebase.auth.AuthCredential credential = com.google.firebase.auth.GoogleAuthProvider.getCredential(account.getIdToken(), null);
                     auth.signInWithCredential(credential).addOnCompleteListener(this, t -> {
-                        if (t.isSuccessful()) {
+                        if (t.isSuccessful() && auth.getCurrentUser() != null) {
+                            String uid = auth.getCurrentUser().getUid();
+                            com.google.firebase.messaging.FirebaseMessaging.getInstance().getToken()
+                                    .addOnCompleteListener(tokenTask -> {
+                                        if (tokenTask.isSuccessful() && tokenTask.getResult() != null) {
+                                            com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                                                    .collection("users").document(uid).update("fcmToken", tokenTask.getResult());
+                                        }
+                                    });
                             Toast.makeText(this, "Google Sign-In Successful!", Toast.LENGTH_SHORT).show();
                             startActivity(new Intent(LoginActivity.this, MainActivity.class));
                             finish();
@@ -84,10 +92,6 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(this, "Google Sign-In Failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
             }
         }
-    }
-
-    public void toForgotPassword(View view) {
-        startActivity(new Intent(LoginActivity.this, ForgotPasswordActivity.class));
     }
 
     public void toForgotPassword(View view) {
@@ -124,6 +128,16 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()) {
+                    if (auth.getCurrentUser() != null) {
+                        String uid = auth.getCurrentUser().getUid();
+                        com.google.firebase.messaging.FirebaseMessaging.getInstance().getToken()
+                                .addOnCompleteListener(tokenTask -> {
+                                    if (tokenTask.isSuccessful() && tokenTask.getResult() != null) {
+                                        com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                                                .collection("users").document(uid).update("fcmToken", tokenTask.getResult());
+                                    }
+                                });
+                    }
                     Toast.makeText(LoginActivity.this,"Log In Successful!",Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
                     finish();
